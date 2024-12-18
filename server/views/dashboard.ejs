@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Summary History</h2>
+        
+        <div class="summaries-container">
+            <% if (summaries && summaries.length > 0) { %>
+                <% summaries.forEach(summary => { %>
+                    <div class="card summary-card">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="<%= summary.url %>" target="_blank"><%= summary.url %></a>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <%= new Date(summary.created_at).toLocaleString() %>
+                            </h6>
+                            <p class="card-text"><%= summary.summary %></p>
+                            <div class="keywords">
+                                <% if (summary.keywords) { %>
+                                    <% summary.keywords.split(',').forEach(keyword => { %>
+                                        <span class="badge bg-secondary keyword-badge"><%= keyword.trim() %></span>
+                                    <% }) %>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="alert alert-info">
+                    No summaries found. Use the Chrome extension to create summaries.
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to fetch and update summaries
+    async function fetchSummaries() {
+        try {
+            const response = await fetch('/api/summary');
+            const data = await response.json();
+            
+            if (data.success) {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error fetching summaries:', error);
+        }
+    }
+
+    // Refresh summaries every 30 seconds
+    setInterval(fetchSummaries, 30000);
+});
+</script> 

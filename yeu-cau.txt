@@ -1,0 +1,34 @@
+1. Functional Requirements
+Chrome Extension
+Tóm tắt nội dung trang web hiện tại:
+Khi người dùng nhấn vào biểu tượng của extension, công cụ sẽ gửi nội dung của trang web hiện tại (hoặc URL) đến server backend.
+Nội dung tóm tắt sẽ được trả về từ server và hiển thị trong popup của extension.
+Nhập các từ khóa hoặc nội dung cần quan tâm:
+Người dùng có thể nhập các từ khóa hoặc nội dung cần tập trung khi tóm tắt.
+Các từ khóa này sẽ được lưu trữ cục bộ hoặc gửi lên server để lưu vào cơ sở dữ liệu.
+Lưu trữ cài đặt:
+Extension sẽ lưu các từ khóa hoặc nội dung cần quan tâm để người dùng không phải nhập lại mỗi lần sử dụng.
+Gửi request đến server:
+Extension sẽ gửi request đến server backend để xử lý tóm tắt thông qua Google Gemini API.
+Server Backend (Express.js)
+Xử lý request từ Chrome Extension:
+Nhận URL hoặc nội dung từ extension.
+Gửi request đến Google Gemini API để lấy nội dung tóm tắt.
+Trả kết quả tóm tắt về cho extension.
+Quản lý từ khóa và cài đặt của người dùng:
+Lưu trữ và quản lý các từ khóa hoặc nội dung cần quan tâm của từng người dùng trong cơ sở dữ liệu MySQL.
+Lưu log các request:
+Ghi lại các request từ extension (bao gồm URL, từ khóa, kết quả tóm tắt, thời gian) để hiển thị trên UI.
+UI (EJS)
+Hiển thị log các request:
+Giao diện để xem danh sách các request được gửi từ extension, bao gồm:
+URL của trang web.
+Từ khóa hoặc nội dung cần quan tâm.
+Kết quả tóm tắt.
+Thời gian gửi request.
+Quản lý từ khóa:
+Giao diện để thêm, sửa, xóa các từ khóa hoặc nội dung cần quan tâm.
+Google Gemini API
+Tích hợp API:
+Sử dụng Google Gemini API để xử lý tóm tắt nội dung trang web.
+Đảm bảo API key được bảo mật và không bị lộ trong mã nguồn của extension.

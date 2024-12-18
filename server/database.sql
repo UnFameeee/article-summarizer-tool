@@ -1,0 +1,18 @@
+CREATE DATABASE IF NOT EXISTS web_summarizer;
+
+USE web_summarizer;
+
+CREATE TABLE keywords (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  keyword VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE summaries (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  url TEXT NOT NULL,
+  content TEXT NOT NULL,
+  summary TEXT NOT NULL,
+  keywords TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+); 

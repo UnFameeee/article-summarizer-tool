@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Web Summarizer</title>
+    <style>
+        body {
+            width: 400px;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-bottom: 15px;
+        }
+        .summary-container {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .keywords-container {
+            margin-bottom: 15px;
+        }
+        .keyword-chip {
+            display: inline-block;
+            padding: 4px 8px;
+            margin: 2px;
+            background-color: #e9ecef;
+            border-radius: 16px;
+            font-size: 12px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .error {
+            color: #dc3545;
+            padding: 10px;
+            display: none;
+        }
+        button {
+            width: 100%;
+            padding: 8px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Web Summarizer</h2>
+        
+        <!-- Keywords Section -->
+        <div class="keywords-container">
+            <h4>Active Keywords</h4>
+            <div id="keywordsList">
+                <!-- Keywords will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Add Keyword Section -->
+        <div class="container">
+            <textarea id="newKeyword" placeholder="Add new keyword (press Enter to add)"></textarea>
+        </div>
+
+        <!-- Summary Button -->
+        <button id="summarizeBtn">Summarize This Page</button>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading">
+            Summarizing page content...
+        </div>
+
+        <!-- Error Message -->
+        <div id="error" class="error"></div>
+
+        <!-- Summary Result -->
+        <div id="summaryContainer" class="summary-container" style="display: none;">
+            <div id="summaryContent"></div>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html> 
