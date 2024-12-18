@@ -1,0 +1,29 @@
+<div class="container">
+    <h1 class="mb-4">Summary Detail</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Original URL</h5>
+            <p class="card-text">
+                <a href="<%= summary.url %>" target="_blank"><%= summary.url %></a>
+            </p>
+
+            <h5 class="card-title mt-4">Summary Level</h5>
+            <p class="card-text">
+                <span class="badge bg-primary"><%= summary.summary_level %></span>
+            </p>
+
+            <h5 class="card-title mt-4">Used Prompt</h5>
+            <p class="card-text"><%= summary.prompt %></p>
+
+            <h5 class="card-title mt-4">Summary Content</h5>
+            <div class="card-text summary-content">
+                <%- summary.summary_html %>
+            </div>
+
+            <div class="mt-4 text-muted">
+                Created at: <%= new Date(summary.created_at).toLocaleString() %>
+            </div>
+        </div>
+    </div>
+</div> 

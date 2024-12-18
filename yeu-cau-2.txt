@@ -1,0 +1,84 @@
+Requirement 2: Format Input và Tùy Chọn Mức Độ Tóm Tắt
+1. Functional Requirements
+Chrome Extension
+
+Lưu Prompt của Người Dùng:
+Người dùng có thể nhập một prompt tùy chỉnh (ví dụ: yêu cầu định dạng đầu ra hoặc các hướng dẫn cụ thể cho Google Gemini API).
+Prompt này sẽ được lưu trữ cục bộ hoặc trên server để người dùng không cần nhập lại mỗi lần mở extension.
+Khi mở extension, prompt đã lưu sẽ được tự động hiển thị trong giao diện.
+
+Tùy Chọn Mức Độ Tóm Tắt:
+Extension sẽ cung cấp các mức độ tóm tắt khác nhau để người dùng lựa chọn, ví dụ:
+Ngắn gọn: Tóm tắt chỉ các ý chính.
+Trung bình: Tóm tắt chi tiết hơn nhưng vẫn ngắn gọn.
+Chi tiết: Bao gồm đầy đủ thông tin với định dạng dễ đọc.
+Mức độ tóm tắt được chọn sẽ được gửi kèm trong request đến server.
+
+Không Đóng Extension Tự Động:
+Extension sẽ mặc định không tự động đóng sau khi người dùng nhấn vào biểu tượng hoặc thực hiện tóm tắt. Người dùng phải tự tay đóng extension khi không cần sử dụng nữa.
+
+Thêm nút mở tab mới:
+Trong giao diện popup của extension, hiển thị thêm một nút với nội dung "Xem chi tiết".
+Khi người dùng nhấn vào nút này:
+Một tab mới sẽ được mở, và tab này sẽ điều hướng đến một URL của server backend (được render bằng EJS).
+URL này sẽ chứa ID của lần tóm tắt hoặc thông tin liên quan để server có thể hiển thị nội dung chi tiết của lần tóm tắt đó.
+Ví dụ URL: https://your-server.com/summary/:id
+
+Server Backend (Express.js)
+
+Format Input Trước Khi Gửi API:
+Server sẽ nhận nội dung từ extension (URL, từ khóa, prompt, mức độ tóm tắt).
+Trước khi gửi request đến Google Gemini API, server sẽ format input thành một đoạn văn bản dễ đọc, ví dụ:
+Thêm các hướng dẫn cụ thể vào prompt (như yêu cầu định dạng HTML).
+Đảm bảo nội dung được gửi đi phù hợp với yêu cầu của Google Gemini API.
+Ví dụ về prompt được format:
+"Hãy tóm tắt nội dung sau đây thành một đoạn văn bản dễ đọc dưới dạng HTML. Bao gồm các tiêu đề, danh sách gạch đầu dòng nếu cần thiết. Mức độ tóm tắt: Trung bình."
+
+Xử Lý Mức Độ Tóm Tắt:
+Dựa trên mức độ tóm tắt mà người dùng chọn, server sẽ điều chỉnh prompt gửi đến Google Gemini API để phù hợp với yêu cầu.
+Ví dụ:
+Ngắn gọn: "Tóm tắt nội dung thành 3 câu ngắn gọn nhất."
+Trung bình: "Tóm tắt nội dung thành một đoạn văn bản dễ đọc, bao gồm các ý chính."
+Chi tiết: "Tóm tắt nội dung đầy đủ với định dạng HTML, bao gồm các tiêu đề và danh sách gạch đầu dòng."
+Trả Kết Quả Dưới Dạng HTML:
+Server sẽ nhận kết quả từ Google Gemini API và trả về cho extension dưới dạng HTML để hiển thị trực tiếp trong giao diện popup.
+
+Route để hiển thị chi tiết tóm tắt:
+Tạo một route mới trong Express.js để hiển thị chi tiết tóm tắt cụ thể dựa trên ID của lần tóm tắt được gửi từ extension.
+Route này sẽ truy vấn cơ sở dữ liệu MySQL để lấy thông tin liên quan đến lần tóm tắt, bao gồm:
+URL của trang web đã tóm tắt.
+Prompt mà người dùng đã sử dụng.
+Nội dung tóm tắt (định dạng HTML).
+Mức độ tóm tắt được chọn.
+Thời gian thực hiện.
+
+Render giao diện bằng EJS:
+Dữ liệu chi tiết của lần tóm tắt sẽ được render trên giao diện EJS.
+Giao diện sẽ bao gồm:
+Tiêu đề: "Chi tiết tóm tắt"
+URL của trang web.
+Prompt mà người dùng đã nhập.
+Nội dung tóm tắt được định dạng dưới dạng HTML (bao gồm tiêu đề, đoạn văn, danh sách, v.v.).
+Thời gian tạo tóm tắt.
+
+
+Database (MySQL)
+Lưu Prompt và Mức Độ Tóm Tắt:
+Bảng user_prompts:
+user_id: ID của người dùng.
+prompt: Prompt tùy chỉnh của người dùng.
+summary_level: Mức độ tóm tắt (ngắn gọn, trung bình, chi tiết).
+created_at: Thời gian lưu prompt.
+
+Bảng summaries trong cơ sở dữ liệu MySQL cần lưu trữ thông tin chi tiết của mỗi lần tóm tắt:
+sql
+
+CREATE TABLE summaries (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  url VARCHAR(255) NOT NULL,
+  prompt TEXT NOT NULL,
+  summary_level ENUM('short', 'medium', 'detailed') NOT NULL,
+  summary_html TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+Khi server xử lý tóm tắt và trả kết quả về cho extension, cũng cần lưu thông tin vào bảng này để sử dụng sau.

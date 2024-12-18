@@ -65,12 +65,60 @@
             border-radius: 4px;
             resize: vertical;
         }
+        .prompt-section {
+            margin-bottom: 15px;
+        }
+        
+        .summary-level {
+            margin-bottom: 15px;
+        }
+        
+        .summary-level label {
+            margin-right: 10px;
+        }
+        
+        .view-detail-btn {
+            margin-top: 10px;
+            background-color: #28a745;
+        }
+        
+        .custom-prompt {
+            width: 100%;
+            min-height: 60px;
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Web Summarizer</h2>
         
+        <!-- Custom Prompt Section -->
+        <div class="prompt-section">
+            <h4>Custom Prompt</h4>
+            <textarea id="customPrompt" class="custom-prompt" 
+                      placeholder="Enter your custom prompt (optional)"></textarea>
+        </div>
+
+        <!-- Summary Level Section -->
+        <div class="summary-level">
+            <h4>Summary Level</h4>
+            <div>
+                <input type="radio" id="short" name="summaryLevel" value="short">
+                <label for="short">Short</label>
+
+                <input type="radio" id="medium" name="summaryLevel" value="medium" checked>
+                <label for="medium">Medium</label>
+
+                <input type="radio" id="detailed" name="summaryLevel" value="detailed">
+                <label for="detailed">Detailed</label>
+            </div>
+        </div>
+
         <!-- Keywords Section -->
         <div class="keywords-container">
             <h4>Active Keywords</h4>
@@ -98,6 +146,9 @@
         <!-- Summary Result -->
         <div id="summaryContainer" class="summary-container" style="display: none;">
             <div id="summaryContent"></div>
+            <button id="viewDetailBtn" class="btn view-detail-btn" style="display: none;">
+                View Detail
+            </button>
         </div>
     </div>
     <script src="popup.js"></script>

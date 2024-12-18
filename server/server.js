@@ -31,6 +31,9 @@ app.use(cors({
 app.use('/api/summary', require('./routes/summary'));
 app.use('/api/keywords', require('./routes/keywords'));
 
+// Add summary detail route
+app.use('/summary', require('./routes/summary-detail'));
+
 // UI Routes
 app.get('/', async (req, res) => {
     const db = require('./config/database');

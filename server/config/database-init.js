@@ -3,6 +3,25 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+// Add new columns to summaries table if they don't exist
+async function addColumnIfNotExists(connection, table, column, definition) {
+    try {
+        const [columns] = await connection.query(`
+            SELECT COLUMN_NAME 
+            FROM INFORMATION_SCHEMA.COLUMNS 
+            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?
+        `, [process.env.DB_NAME, table, column]);
+
+        if (columns.length === 0) {
+            await connection.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+            console.log(`Added column ${column} to ${table}`);
+        }
+    } catch (error) {
+        console.error(`Error adding column ${column}:`, error);
+        throw error;
+    }
+}
+
 async function initializeDatabase() {
     try {
         // First connection to create database if not exists
@@ -19,7 +38,18 @@ async function initializeDatabase() {
         // Use the database
         await connection.query(`USE ${process.env.DB_NAME}`);
 
-        // Create tables
+        // Create user_prompts table
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS user_prompts (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                user_id VARCHAR(255),
+                prompt TEXT NOT NULL,
+                summary_level ENUM('short', 'medium', 'detailed') DEFAULT 'medium',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        // Create keywords table if not exists (keep existing data)
         await connection.query(`
             CREATE TABLE IF NOT EXISTS keywords (
                 id INT PRIMARY KEY AUTO_INCREMENT,
@@ -28,16 +58,21 @@ async function initializeDatabase() {
             )
         `);
 
+        // Create or modify summaries table
         await connection.query(`
             CREATE TABLE IF NOT EXISTS summaries (
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 url TEXT NOT NULL,
                 content TEXT NOT NULL,
-                summary TEXT NOT NULL,
                 keywords TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
+
+        // Add new columns to summaries table if they don't exist
+        await addColumnIfNotExists(connection, 'summaries', 'prompt', 'TEXT');
+        await addColumnIfNotExists(connection, 'summaries', 'summary_level', "ENUM('short', 'medium', 'detailed') NOT NULL DEFAULT 'medium'");
+        await addColumnIfNotExists(connection, 'summaries', 'summary_html', 'TEXT');
 
         console.log('Database and tables initialized successfully');
         await connection.end();

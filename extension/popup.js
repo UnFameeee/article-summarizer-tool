@@ -1,6 +1,44 @@
 // Store API URL
 const API_URL = 'http://localhost:3000/api';
 
+// Load saved prompt and summary level from storage
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const { customPrompt, summaryLevel } = await chrome.storage.local.get(['customPrompt', 'summaryLevel']);
+        if (customPrompt) {
+            document.getElementById('customPrompt').value = customPrompt;
+        }
+        if (summaryLevel) {
+            document.querySelector(`input[value="${summaryLevel}"]`).checked = true;
+        }
+    } catch (error) {
+        console.error('Error loading saved settings:', error);
+    }
+    
+    // Fetch initial keywords
+    fetchKeywords();
+});
+
+// Save prompt when changed
+document.getElementById('customPrompt').addEventListener('input', async (e) => {
+    try {
+        await chrome.storage.local.set({ customPrompt: e.target.value });
+    } catch (error) {
+        console.error('Error saving prompt:', error);
+    }
+});
+
+// Save summary level when changed
+document.querySelectorAll('input[name="summaryLevel"]').forEach(radio => {
+    radio.addEventListener('change', async (e) => {
+        try {
+            await chrome.storage.local.set({ summaryLevel: e.target.value });
+        } catch (error) {
+            console.error('Error saving summary level:', error);
+        }
+    });
+});
+
 // Function to fetch keywords from server
 async function fetchKeywords() {
     try {
@@ -82,6 +120,10 @@ async function summarizeContent() {
         // Get page content
         const pageData = await getCurrentTabContent();
         
+        // Get settings
+        const customPrompt = document.getElementById('customPrompt').value;
+        const summaryLevel = document.querySelector('input[name="summaryLevel"]:checked').value;
+        
         // Get keywords
         const response = await fetch(`${API_URL}/keywords`);
         const keywordsData = await response.json();
@@ -96,14 +138,17 @@ async function summarizeContent() {
             body: JSON.stringify({
                 url: pageData.url,
                 content: pageData.content,
-                keywords: keywords
+                keywords: keywords,
+                summaryLevel: summaryLevel,
+                customPrompt: customPrompt
             })
         });
         
         const summaryData = await summaryResponse.json();
         
         if (summaryData.success) {
-            displaySummary(summaryData.data.summary);
+            displaySummary(summaryData.data.summaryHtml);
+            setupViewDetailButton(summaryData.data.id);
         } else {
             showError(summaryData.error);
         }
@@ -113,6 +158,25 @@ async function summarizeContent() {
     } finally {
         showLoading(false);
     }
+}
+
+// Function to setup view detail button
+function setupViewDetailButton(summaryId) {
+    const viewDetailBtn = document.getElementById('viewDetailBtn');
+    viewDetailBtn.style.display = 'block';
+    viewDetailBtn.onclick = () => {
+        chrome.tabs.create({
+            url: `http://localhost:3000/summary/${summaryId}`
+        });
+    };
+}
+
+// Function to display summary
+function displaySummary(summaryHtml) {
+    const container = document.getElementById('summaryContainer');
+    const content = document.getElementById('summaryContent');
+    container.style.display = 'block';
+    content.innerHTML = summaryHtml;
 }
 
 // UI Helper Functions
@@ -125,13 +189,6 @@ function showError(message) {
     const errorElement = document.getElementById('error');
     errorElement.textContent = message;
     errorElement.style.display = message ? 'block' : 'none';
-}
-
-function displaySummary(summary) {
-    const container = document.getElementById('summaryContainer');
-    const content = document.getElementById('summaryContent');
-    container.style.display = 'block';
-    content.textContent = summary;
 }
 
 // Event Listeners
