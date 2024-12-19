@@ -41,19 +41,9 @@ async function initializeDatabase() {
         // Create user_prompts table
         await connection.query(`
             CREATE TABLE IF NOT EXISTS user_prompts (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                user_id VARCHAR(255),
+                user_id VARCHAR(255) PRIMARY KEY,
                 prompt TEXT NOT NULL,
-                summary_level ENUM('short', 'medium', 'detailed') DEFAULT 'medium',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
-        // Create keywords table if not exists (keep existing data)
-        await connection.query(`
-            CREATE TABLE IF NOT EXISTS keywords (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                keyword VARCHAR(255) NOT NULL,
+                summary_level ENUM('short', 'medium', 'detailed') NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
@@ -61,10 +51,11 @@ async function initializeDatabase() {
         // Create or modify summaries table
         await connection.query(`
             CREATE TABLE IF NOT EXISTS summaries (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                url TEXT NOT NULL,
-                content TEXT NOT NULL,
-                keywords TEXT,
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                url VARCHAR(255) NOT NULL,
+                prompt TEXT NOT NULL,
+                summary_level ENUM('short', 'medium', 'detailed') NOT NULL,
+                summary_html TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
