@@ -16,7 +16,7 @@ function createHtmlTemplate() {
     return `
 Format the output using this HTML structure:
 <div class="summary-content">
-    <h1 style="text-align: center; color: #2c3e50; font-family: Arial, sans-serif; margin-bottom: 20px;">Document Summary</h1>
+    <h1 style="text-align: center; color: #2c3e50; font-family: Arial, sans-serif; margin-bottom: 20px;">Tóm tắt</h1>
     
     <h2 style="color: #3498db; margin-top: 20px; font-family: Arial, sans-serif;">Key Points</h2>
     <ul style="line-height: 1.6; margin-bottom: 20px;">

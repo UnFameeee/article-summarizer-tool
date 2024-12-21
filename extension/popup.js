@@ -5,7 +5,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const summaryContainer = document.getElementById('summaryContainer');
     const summaryContent = document.getElementById('summaryContent');
     const viewDetailBtn = document.getElementById('viewDetailBtn');
+    const textarea = document.getElementById('customPrompt');
+    const currentCount = document.getElementById('currentCount');
     
+    // Character count function
+    function updateCharCount() {
+        const count = textarea.value.length;
+        currentCount.textContent = count;
+        
+        // Change color when approaching limit
+        if (count > 4000) {
+            currentCount.style.color = '#e74c3c';
+        } else {
+            currentCount.style.color = '#636e72';
+        }
+    }
+
+    // Add character count event listeners
+    textarea.addEventListener('input', updateCharCount);
+    textarea.addEventListener('keyup', updateCharCount);
+    textarea.addEventListener('paste', updateCharCount);
+
+    // Initial character count
+    updateCharCount();
+
     // Load saved prompt and summary level
     async function loadSavedSettings() {
         try {
@@ -28,6 +51,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.data.latestPrompt) {
                     document.getElementById('customPrompt').value = data.data.latestPrompt.prompt;
                     document.querySelector(`input[name="summaryLevel"][value="${data.data.latestPrompt.summary_level}"]`).checked = true;
+                    // Update character count after setting the value
+                    updateCharCount();
                 }
 
                 // Display the latest summary if exists

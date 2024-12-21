@@ -1,6 +1,6 @@
 // Listen for installation
 chrome.runtime.onInstalled.addListener(() => {
-    console.log('Web Summarizer extension installed');
+    console.log('Chunk Sum extension installed');
     
     // Create context menu
     chrome.contextMenus.create({
