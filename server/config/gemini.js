@@ -13,23 +13,23 @@ const MAX_CUSTOM_PROMPT_LENGTH = process.env.MAX_CUSTOM_PROMPT_LENGTH || 5000;
 
 // Function to create HTML template
 function createHtmlTemplate() {
-    return `
+    return ` 
 Format the output using this HTML structure:
 <div class="summary-content">
-    <h1 style="text-align: center; color: #2c3e50; font-family: Arial, sans-serif; margin-bottom: 20px;">Tóm tắt</h1>
+    <h1 style="text-align: center; color: #72d1a8; font-family: Arial, sans-serif; margin-bottom: 20px; font-size: 18px;">Tóm tắt</h1>
     
-    <h2 style="color: #3498db; margin-top: 20px; font-family: Arial, sans-serif;">Key Points</h2>
-    <ul style="line-height: 1.6; margin-bottom: 20px;">
+    <h2 style="color: #72d1a8; margin-top: 20px; font-family: Arial, sans-serif; font-size: 18px;">Key Points</h2>
+    <ul style="line-height: 1.6; margin-bottom: 20px; font-size: 15px;">
         [List the main points here]
     </ul>
 
-    <h2 style="color: #3498db; margin-top: 20px; font-family: Arial, sans-serif;">Detailed Summary</h2>
-    <p style="line-height: 1.8; font-family: Arial, sans-serif; text-align: justify; margin-bottom: 20px;">
-        [Provide the detailed summary here, using <strong>bold text</strong> for important points]
-    </p>
+    <h2 style="color: #72d1a8; margin-top: 20px; font-family: Arial, sans-serif; font-size: 18px;">Detailed Summary</h2>
+    <ul style="line-height: 1.8; font-family: Arial, sans-serif; text-align: justify; margin-bottom: 20px; font-size: 14px;">
+        [List the detailed summary here using <strong>bold text</strong> for important points]
+    </ul>
 
-    <h2 style="color: #3498db; margin-top: 20px; font-family: Arial, sans-serif;">Conclusions</h2>
-    <ul style="line-height: 1.6;">
+    <h2 style="color: #72d1a8; margin-top: 20px; font-family: Arial, sans-serif; font-size: 18px;">Conclusions</h2>
+    <ul style="line-height: 1.6; font-size: 15px;">
         [List the key takeaways here]
     </ul>
 </div>`;
@@ -75,13 +75,13 @@ function createPrompt(content, keywords = '', level = 'medium', customPrompt = '
         // Add level-specific instructions
         switch (level) {
             case 'short':
-                basePrompt += ' focusing only on the most essential points';
+                basePrompt += ', and focusing only on the most essential points';
                 break;
             case 'detailed':
-                basePrompt += ' including all significant details and supporting information';
+                basePrompt += ', and including all significant details and supporting information';
                 break;
             default: // medium
-                basePrompt += ' with a balance of main points and key details';
+                basePrompt += ', and with a balance of main points and key details';
         }
 
         // Add length constraint
@@ -98,11 +98,16 @@ function createPrompt(content, keywords = '', level = 'medium', customPrompt = '
             basePrompt += `\nEnsure to focus on and highlight these keywords: ${keywords}`;
         }
 
-        // Add the content
-        basePrompt += `\n\nContent to summarize:\n${content}`;
+        // Clean up content by removing extra whitespace and empty lines
+        const cleanContent = content
+            .replace(/\n\s*\n/g, '\n') // Replace multiple newlines with single newline
+            .replace(/\s+/g, ' ')      // Replace multiple spaces with single space
+            .trim();                    // Remove leading/trailing whitespace
+
+        basePrompt += `\n\nContent to summarize:\n${cleanContent}`;
 
         // Log the prompt (without actual content for clarity)
-        // const logPrompt = basePrompt.replace(content, '[CONTENT]');
+        const logPrompt = basePrompt;
         console.log('\nPrompt being sent to Gemini API:');
         console.log('----------------------------------------');
         console.log(logPrompt);
