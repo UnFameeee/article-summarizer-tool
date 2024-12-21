@@ -10,16 +10,34 @@
                             <h5 class="card-title">
                                 <a href="<%= summary.url %>" target="_blank"><%= summary.url %></a>
                             </h5>
-                            <h6 class="card-subtitle mb-2 text-muted">
-                                <%= new Date(summary.created_at).toLocaleString() %>
-                            </h6>
-                            <p class="card-text"><%= summary.summary %></p>
-                            <div class="keywords">
+                            <div class="card-subtitle mb-2">
+                                <span class="badge bg-primary"><%= summary.summary_level %></span>
+                                <small class="text-muted ms-2">
+                                    <%= new Date(summary.created_at).toLocaleString() %>
+                                </small>
+                            </div>
+                            <% if (summary.prompt) { %>
+                                <div class="prompt-used mb-2">
+                                    <small class="text-muted">Used Prompt:</small>
+                                    <p class="mb-0"><%= summary.prompt %></p>
+                                </div>
+                            <% } %>
+                            <div class="summary-content">
+                                <%- summary.summary_html %>
+                            </div>
+                            <div class="keywords mt-2">
                                 <% if (summary.keywords) { %>
                                     <% summary.keywords.split(',').forEach(keyword => { %>
-                                        <span class="badge bg-secondary keyword-badge"><%= keyword.trim() %></span>
+                                        <span class="badge bg-secondary keyword-badge">
+                                            <%= keyword.trim() %>
+                                        </span>
                                     <% }) %>
                                 <% } %>
+                            </div>
+                            <div class="mt-3">
+                                <a href="/summary/<%= summary.id %>" class="btn btn-sm btn-outline-primary">
+                                    View Detail
+                                </a>
                             </div>
                         </div>
                     </div>

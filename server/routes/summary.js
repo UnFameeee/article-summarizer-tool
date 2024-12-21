@@ -6,9 +6,8 @@ const { generateSummary } = require('../config/gemini');
 // POST /api/summary - Create new summary
 router.post('/', async (req, res) => {
     try {
-        const { url, content, keywords } = req.body;
+        const { url, content, keywords, summaryLevel, customPrompt } = req.body;
 
-        // Validate input
         if (!content) {
             return res.status(400).json({
                 success: false,
@@ -17,21 +16,27 @@ router.post('/', async (req, res) => {
         }
 
         // Generate summary using Gemini API
-        const summary = await generateSummary(content, keywords);
+        const summaryHtml = await generateSummary(
+            content, 
+            keywords, 
+            summaryLevel || 'medium',
+            customPrompt
+        );
 
         // Save to database
         const [result] = await db.execute(
-            'INSERT INTO summaries (url, content, summary, keywords) VALUES (?, ?, ?, ?)',
-            [url, content, summary, keywords]
+            'INSERT INTO summaries (url, content, prompt, summary_level, summary_html, keywords) VALUES (?, ?, ?, ?, ?, ?)',
+            [url, content, customPrompt, summaryLevel || 'medium', summaryHtml, keywords]
         );
 
         res.json({
             success: true,
             data: {
                 id: result.insertId,
-                summary,
+                summaryHtml,
                 url,
-                keywords
+                keywords,
+                summaryLevel
             }
         });
 

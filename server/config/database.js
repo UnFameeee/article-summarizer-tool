@@ -1,11 +1,7 @@
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
-const initializeDatabase = require('./database-init');
 
 dotenv.config();
-
-// Initialize database and tables
-initializeDatabase().catch(console.error);
 
 // Create connection pool
 const pool = mysql.createPool({
