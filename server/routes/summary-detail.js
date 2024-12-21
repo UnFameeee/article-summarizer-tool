@@ -5,6 +5,14 @@ const { generateSummary } = require('../config/gemini');
 
 router.get('/:id', async (req, res) => {
     try {
+        // Validate UUID format
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(req.params.id)) {
+            return res.status(400).render('error', {
+                message: 'Invalid summary ID format'
+            });
+        }
+
         const [rows] = await db.execute(
             'SELECT * FROM summaries WHERE id = ?',
             [req.params.id]

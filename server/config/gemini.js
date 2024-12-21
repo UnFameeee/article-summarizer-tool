@@ -91,7 +91,7 @@ function createPrompt(content, keywords = '', level = 'medium', customPrompt = '
         basePrompt += `. ${createHtmlTemplate()}`;
 
         // Add language detection instruction
-        basePrompt += '\nDetect and use the same language as the input content for the summary';
+        basePrompt += '\nDetect if a language is mentioned in the prompt and use it as the primary language for the summary. If no language is mentioned, default to the language of the original content before summarizing.';
 
         // Add keywords if provided
         if (keywords) {
@@ -102,7 +102,7 @@ function createPrompt(content, keywords = '', level = 'medium', customPrompt = '
         basePrompt += `\n\nContent to summarize:\n${content}`;
 
         // Log the prompt (without actual content for clarity)
-        const logPrompt = basePrompt.replace(content, '[CONTENT]');
+        // const logPrompt = basePrompt.replace(content, '[CONTENT]');
         console.log('\nPrompt being sent to Gemini API:');
         console.log('----------------------------------------');
         console.log(logPrompt);

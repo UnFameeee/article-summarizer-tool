@@ -7,14 +7,51 @@ document.addEventListener('DOMContentLoaded', function() {
     const viewDetailBtn = document.getElementById('viewDetailBtn');
     
     // Load saved prompt and summary level
-    chrome.storage.local.get(['customPrompt', 'summaryLevel'], function(data) {
-        if (data.customPrompt) {
-            document.getElementById('customPrompt').value = data.customPrompt;
+    async function loadSavedSettings() {
+        try {
+            // Get current tab URL
+            const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+            
+            // Get or create user ID
+            let { userId } = await chrome.storage.local.get(['userId']);
+            if (!userId) {
+                userId = 'user_' + Math.random().toString(36).substr(2, 9);
+                await chrome.storage.local.set({ userId });
+            }
+
+            // Fetch latest data from server
+            const response = await fetch(`http://localhost:3000/api/latest-summary?url=${encodeURIComponent(tab.url)}&userId=${userId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                // Set the saved prompt and summary level from latest user prompt
+                if (data.data.latestPrompt) {
+                    document.getElementById('customPrompt').value = data.data.latestPrompt.prompt;
+                    document.querySelector(`input[name="summaryLevel"][value="${data.data.latestPrompt.summary_level}"]`).checked = true;
+                }
+
+                // Display the latest summary if exists
+                if (data.data.latestSummary) {
+                    summaryContent.innerHTML = data.data.latestSummary.summary_html;
+                    summaryContainer.style.display = 'block';
+                    
+                    if (data.data.latestSummary.id) {
+                        viewDetailBtn.style.display = 'block';
+                        viewDetailBtn.onclick = () => {
+                            chrome.tabs.create({
+                                url: `http://localhost:3000/summary/${data.data.latestSummary.id}`
+                            });
+                        };
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error loading saved settings:', error);
         }
-        if (data.summaryLevel) {
-            document.querySelector(`input[name="summaryLevel"][value="${data.summaryLevel}"]`).checked = true;
-        }
-    });
+    }
+
+    // Call this function when popup is opened
+    loadSavedSettings();
 
     summarizeBtn.addEventListener('click', async function() {
         try {
@@ -23,18 +60,13 @@ document.addEventListener('DOMContentLoaded', function() {
             errorDiv.style.display = 'none';
             summaryContainer.style.display = 'none';
 
-            // Get current tab URL
+            // Get current tab URL and user ID
             const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+            const { userId } = await chrome.storage.local.get(['userId']);
             
             // Get values
             const customPrompt = document.getElementById('customPrompt').value;
             const summaryLevel = document.querySelector('input[name="summaryLevel"]:checked').value;
-
-            // Save settings
-            chrome.storage.local.set({
-                customPrompt: customPrompt,
-                summaryLevel: summaryLevel
-            });
 
             // Send request to server
             const response = await fetch('http://localhost:3000/api/summarize', {
@@ -45,7 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({
                     url: tab.url,
                     prompt: customPrompt,
-                    summaryLevel: summaryLevel
+                    summaryLevel: summaryLevel,
+                    userId: userId
                 })
             });
 

@@ -4,6 +4,7 @@ const db = require('../config/database');
 const { generateSummary } = require('../config/gemini');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { v4: uuidv4 } = require('uuid');
 
 // Function to extract main content from webpage
 async function extractMainContent(url) {
@@ -53,10 +54,57 @@ async function extractMainContent(url) {
     }
 }
 
+// GET latest prompt and summary for URL
+router.get('/latest-summary', async (req, res) => {
+    try {
+        const { url, userId } = req.query;
+
+        if (!url || !userId) {
+            return res.status(400).json({
+                success: false,
+                error: 'URL and userId are required'
+            });
+        }
+
+        // Get latest user prompt for this user
+        const [userPrompts] = await db.execute(
+            'SELECT * FROM user_prompts WHERE user_id = ? ORDER BY created_at DESC LIMIT 1',
+            [userId]
+        );
+
+        // Get latest summary for this URL
+        const [summaries] = await db.execute(
+            'SELECT s.*, up.prompt as user_prompt, up.summary_level as user_prompt_level ' +
+            'FROM summaries s ' +
+            'LEFT JOIN user_prompts up ON s.user_prompt_id = up.id ' +
+            'WHERE s.url = ? ' +
+            'ORDER BY s.created_at DESC LIMIT 1',
+            [url]
+        );
+
+        res.json({
+            success: true,
+            data: {
+                latestPrompt: userPrompts[0] || null,
+                latestSummary: summaries[0] || null
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching latest data:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || 'Internal server error'
+        });
+    }
+});
+
 // POST /api/summarize endpoint
 router.post('/summarize', async (req, res) => {
     try {
-        const { url, prompt, summaryLevel } = req.body;
+        const { url, prompt, summaryLevel, userId } = req.body;
+        const summaryId = uuidv4();
+        let userPromptId = null;
 
         if (!url) {
             return res.status(400).json({ 
@@ -64,7 +112,16 @@ router.post('/summarize', async (req, res) => {
             });
         }
 
-        // Extract content from URL
+        // Save user prompt if provided
+        if (userId) {
+            const promptId = uuidv4();
+            await db.execute(
+                'INSERT INTO user_prompts (id, user_id, prompt, summary_level) VALUES (?, ?, ?, ?)',
+                [promptId, userId, prompt || '', summaryLevel || 'medium']
+            );
+            userPromptId = promptId;
+        }
+
         const content = await extractMainContent(url);
 
         if (!content) {
@@ -73,19 +130,18 @@ router.post('/summarize', async (req, res) => {
             });
         }
 
-        // Generate summary using Gemini API
         const summary = await generateSummary(content, '', summaryLevel, prompt);
 
-        // Save to database
-        const [result] = await db.execute(
-            'INSERT INTO summaries (url, content, prompt, summary_level, summary_html) VALUES (?, ?, ?, ?, ?)',
-            [url, content, prompt || '', summaryLevel || 'medium', summary]
+        // Save to database with UUID and user_prompt_id
+        await db.execute(
+            'INSERT INTO summaries (id, url, content, prompt, summary_level, summary_html, user_prompt_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [summaryId, url, content, prompt || '', summaryLevel || 'medium', summary, userPromptId]
         );
 
         res.json({ 
             success: true,
             data: {
-                id: result.insertId,
+                id: summaryId,
                 summary,
                 url
             }
