@@ -1,0 +1,67 @@
+Requirement: Tối ưu Prompt Gửi Sang Google Gemini API (Cập nhật)
+1. Functional Requirements
+Tóm tắt theo cấp độ tùy chỉnh
+Người dùng chọn cấp độ tóm tắt:
+Cung cấp 3 tùy chọn trong giao diện (extension hoặc hệ thống backend) tương ứng với độ dài nội dung:
+Short: Tối đa 1000 ký tự.
+Medium: Tối đa 1500 ký tự.
+Detailed: Tối đa 2000 ký tự.
+Người dùng chọn cấp độ phù hợp, và giá trị này sẽ được gửi kèm trong request đến server backend để format prompt.
+Đảm bảo phần tóm tắt luôn ở định dạng HTML
+Prompt được gửi đến Gemini API phải luôn yêu cầu định dạng HTML với một cấu trúc cố định.
+Nội dung sườn của prompt sẽ đảm bảo:
+Sử dụng các thẻ HTML phù hợp như <h1>, <h2>, <p>, <ul>, <li>, và các inline styles để cải thiện khả năng đọc.
+Tóm tắt phải được trình bày theo một cấu trúc cố định:
+Tiêu đề tài liệu: Sử dụng thẻ <h1>, căn giữa, và thêm inline styles cho font và màu sắc.
+Tiêu đề phân đoạn: Sử dụng thẻ <h2> với màu sắc khác biệt để phân tách các phần.
+Nội dung chi tiết: Sử dụng thẻ <p> để chứa nội dung chi tiết, nhấn mạnh các điểm quan trọng bằng thẻ <strong>.
+Danh sách: Sử dụng thẻ <ul> và <li> để hiển thị các ý chính dưới dạng danh sách gạch đầu dòng.
+Cải thiện giao diện: Thêm inline styles để cải thiện khả năng đọc (e.g., font-family, line-height, colors).
+Đảm bảo tính nhất quán: Thống nhất về khoảng cách, căn chỉnh giữa các phần trong tài liệu.
+Xác định ngôn ngữ mặc định
+Nếu người dùng có custom prompt yêu cầu ngôn ngữ cụ thể:
+Hệ thống sẽ sử dụng ngôn ngữ được chỉ định trong custom prompt của người dùng.
+Ví dụ: "Summarize the document in Vietnamese."
+Nếu người dùng không đề cập ngôn ngữ trong custom prompt:
+Hệ thống sẽ tự động phát hiện ngôn ngữ từ nội dung cần tóm tắt (dựa trên phân tích văn bản hoặc các công cụ nhận diện ngôn ngữ như thư viện langdetect hoặc Google Translate API).
+Ngôn ngữ này sẽ được thêm vào prompt tóm tắt.
+Tùy chỉnh prompt theo yêu cầu người dùng
+Nếu người dùng nhập prompt tùy chỉnh:
+Hệ thống sẽ lấy prompt từ người dùng và thêm nó vào phần đầu của prompt gửi sang Gemini API.
+Ví dụ:
+javascript
+
+
+User-defined prompt: "Focus on key insights and avoid unnecessary details."
+Final prompt: "Focus on key insights and avoid unnecessary details. Format the output in HTML with appropriate tags (headings, paragraphs, lists) for human-friendly readability..."
+Nếu không có prompt tùy chỉnh:
+Dùng một prompt mặc định để yêu cầu tóm tắt:
+javascript
+
+
+"Summarize the following content in a concise and structured format. Format the output in HTML with appropriate tags (headings, paragraphs, lists) for human-friendly readability."
+Giới hạn độ dài content và custom prompt
+Độ dài tối đa của content:
+Hệ thống giới hạn nội dung cần tóm tắt (content) ở mức tối đa 7,000,000 ký tự.
+Nếu nội dung vượt quá giới hạn này:
+Hệ thống sẽ tự động cắt bớt nội dung và chỉ giữ lại 7,000,000 ký tự đầu tiên.
+Phần nội dung bị cắt bỏ sẽ không được gửi đến Gemini API.
+Không trả về lỗi, chỉ xử lý phần nội dung đã được cắt.
+Độ dài tối đa của custom prompt:
+Custom prompt của người dùng sẽ bị giới hạn tối đa 5,000 ký tự.
+Nếu người dùng nhập prompt vượt quá giới hạn này, server sẽ trả về lỗi với thông báo:
+javascript
+
+
+"Custom prompt exceeds the maximum allowed length of 5,000 characters."
+Lưu các giới hạn trong file .env
+Hai biến sau sẽ được lưu trong file .env để dễ dàng cấu hình:
+MAX_CONTENT_LENGTH: Giá trị 7,000,000 (giới hạn độ dài tối đa của content).
+MAX_CUSTOM_PROMPT_LENGTH: Giá trị 5,000 (giới hạn độ dài tối đa của custom prompt).
+2. Non-Functional Requirements
+Cấu hình động:
+Độ dài tối đa của content (MAX_CONTENT_LENGTH) và custom prompt (MAX_CUSTOM_PROMPT_LENGTH) phải được cấu hình thông qua file .env.
+Hệ thống phải dễ dàng thay đổi các giá trị này mà không cần chỉnh sửa mã nguồn.
+Kiểm tra và xử lý trước khi gửi API:
+Đảm bảo rằng content vượt quá giới hạn được cắt bớt trước khi gửi đến Gemini API.
+Custom prompt vượt quá giới hạn sẽ bị từ chối với thông báo lỗi rõ ràng.

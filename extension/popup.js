@@ -17,12 +17,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     summarizeBtn.addEventListener('click', async function() {
-        // Show loading
-        loadingDiv.style.display = 'block';
-        errorDiv.style.display = 'none';
-        summaryContainer.style.display = 'none';
-
         try {
+            // Show loading
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            summaryContainer.style.display = 'none';
+
             // Get current tab URL
             const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
             
@@ -49,29 +49,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             });
 
-            if (!response.ok) {
-                throw new Error('Server response was not ok');
-            }
-
             const data = await response.json();
 
-            // Display summary
-            summaryContent.innerHTML = data.summary;
-            summaryContainer.style.display = 'block';
-            viewDetailBtn.style.display = 'block';
+            if (!data.success) {
+                throw new Error(data.error);
+            }
 
-            // Handle view detail button
-            viewDetailBtn.onclick = function() {
-                if (data.id) {
+            // Display summary
+            summaryContent.innerHTML = data.data.summary;
+            summaryContainer.style.display = 'block';
+            
+            // Setup view detail button
+            if (data.data.id) {
+                viewDetailBtn.style.display = 'block';
+                viewDetailBtn.onclick = () => {
                     chrome.tabs.create({
-                        url: `http://localhost:3000/summary/${data.id}`
+                        url: `http://localhost:3000/summary/${data.data.id}`
                     });
-                }
-            };
+                };
+            }
 
         } catch (error) {
             console.error('Error:', error);
-            errorDiv.textContent = 'Error: Could not generate summary. Please try again.';
+            errorDiv.textContent = error.message || 'Error: Could not generate summary. Please try again.';
             errorDiv.style.display = 'block';
         } finally {
             loadingDiv.style.display = 'none';

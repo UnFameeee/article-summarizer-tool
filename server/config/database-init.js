@@ -3,6 +3,8 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+let isInitialized = false;
+
 // Add new columns to summaries table if they don't exist
 async function addColumnIfNotExists(connection, table, column, definition) {
     try {
@@ -23,6 +25,11 @@ async function addColumnIfNotExists(connection, table, column, definition) {
 }
 
 async function initializeDatabase() {
+    // Return early if already initialized
+    if (isInitialized) {
+        return;
+    }
+
     try {
         // First connection to create database if not exists
         const connection = await mysql.createConnection({
@@ -67,6 +74,9 @@ async function initializeDatabase() {
 
         console.log('Database and tables initialized successfully');
         await connection.end();
+        
+        // Set the flag after successful initialization
+        isInitialized = true;
 
     } catch (error) {
         console.error('Error initializing database:', error);
