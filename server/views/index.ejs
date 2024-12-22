@@ -1,0 +1,263 @@
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Recent Summaries</h1>
+                <form class="d-flex gap-2" method="GET" action="/">
+                    <select 
+                        name="level" 
+                        class="form-select form-select-sm" 
+                        style="width: auto;"
+                        onchange="this.form.submit()"
+                    >
+                        <option value="all" <%= levelFilter === 'all' ? 'selected' : '' %>>All Levels</option>
+                        <option value="short" <%= levelFilter === 'short' ? 'selected' : '' %>>Short</option>
+                        <option value="medium" <%= levelFilter === 'medium' ? 'selected' : '' %>>Medium</option>
+                        <option value="detailed" <%= levelFilter === 'detailed' ? 'selected' : '' %>>Detailed</option>
+                    </select>
+                    <div class="input-group input-group-sm" style="width: 200px;">
+                        <input 
+                            type="text" 
+                            name="search" 
+                            class="form-control" 
+                            placeholder="Search by title..." 
+                            value="<%= searchQuery %>"
+                        >
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row g-4">
+                <% summaries.forEach(function(summary) { %>
+                    <div class="col-md-6">
+                        <div class="card summary-card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <!-- Title -->
+                                <h5 class="card-title mb-3 text-truncate">
+                                    <%= summary.title || 'Untitled' %>
+                                </h5>
+
+                                <!-- URL -->
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-link text-primary me-2"></i>
+                                    <div class="text-truncate">
+                                        <a href="<%= summary.url %>" target="_blank" class="hover-link">
+                                            <%= summary.url %>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Summary Level -->
+                                <div class="mb-3">
+                                    <span class="badge bg-primary px-3">
+                                        <%= summary.summary_level.charAt(0).toUpperCase() + summary.summary_level.slice(1) %>
+                                    </span>
+                                </div>
+
+                                <!-- Preview -->
+                                <div class="summary-preview flex-grow-1 mb-3">
+                                    <% 
+                                        const cleanText = summary.summary_html.replace(/<[^>]*>/g, '');
+                                        const previewText = cleanText.length > 200 ? cleanText.substring(0, 200) + '...' : cleanText;
+                                    %>
+                                    <%= previewText %>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        <%= new Date(summary.created_at).toLocaleString() %>
+                                    </small>
+                                    <a href="/summary/<%= summary.id %>" class="btn btn-sm btn-outline-primary">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+
+            <!-- Pagination -->
+            <% if (summaries.length > 0) { %>
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous button -->
+                        <li class="page-item <%= !hasPreviousPage ? 'disabled' : '' %>">
+                            <a class="page-link" 
+                               href="<%= hasPreviousPage ? `/?page=${previousPage}&search=${searchQuery}&level=${levelFilter}` : '#' %>"
+                               <%= !hasPreviousPage ? 'tabindex="-1" aria-disabled="true"' : '' %>>
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        <!-- First page -->
+                        <% if (currentPage > 2) { %>
+                            <li class="page-item">
+                                <a class="page-link" href="/?page=1">1</a>
+                            </li>
+                            <% if (currentPage > 3) { %>
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            <% } %>
+                        <% } %>
+
+                        <!-- Current page and neighbors -->
+                        <% for(let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" 
+                                   href="/?page=<%= i %>&search=<%= searchQuery %>&level=<%= levelFilter %>"
+                                >
+                                    <%= i %>
+                                </a>
+                            </li>
+                        <% } %>
+
+                        <!-- Last page -->
+                        <% if (currentPage < totalPages - 1) { %>
+                            <% if (currentPage < totalPages - 2) { %>
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            <% } %>
+                            <li class="page-item">
+                                <a class="page-link" href="/?page=<%= totalPages %>"><%= totalPages %></a>
+                            </li>
+                        <% } %>
+
+                        <!-- Next button -->
+                        <li class="page-item <%= !hasNextPage ? 'disabled' : '' %>">
+                            <a class="page-link" href="<%= hasNextPage ? '/?page=' + nextPage : '#' %>"
+                               <%= !hasNextPage ? 'tabindex="-1" aria-disabled="true"' : '' %>>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            <% } %>
+
+            <% if (summaries.length === 0) { %>
+                <div class="text-center py-5">
+                    <i class="fas fa-file-alt text-muted mb-3" style="font-size: 3rem;"></i>
+                    <h5>No summaries yet</h5>
+                    <p class="text-muted">Install our extension to start summarizing web content.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-primary {
+    color: #72d1a8 !important;
+}
+
+.bg-primary {
+    background-color: #72d1a8 !important;
+}
+
+.btn-outline-primary {
+    color: #72d1a8;
+    border-color: #72d1a8;
+}
+
+.btn-outline-primary:hover {
+    background-color: #72d1a8;
+    border-color: #72d1a8;
+    color: white;
+}
+
+.summary-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.1);
+}
+
+.hover-link {
+    text-decoration: none;
+    color: #2d3436;
+    transition: color 0.3s ease;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hover-link:hover {
+    color: #72d1a8;
+}
+
+.summary-preview {
+    font-size: 0.875rem;
+    color: #636e72;
+    line-height: 1.6;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #72d1a8;
+    box-shadow: 0 0 0 0.2rem rgba(114, 209, 168, 0.25);
+}
+
+.badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-title {
+    color: #2d3436;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Pagination styles */
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-link {
+    color: #72d1a8;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    margin: 0 0.25rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.page-link:hover {
+    background-color: #e9ecef;
+    color: #72d1a8;
+}
+
+.page-item.active .page-link {
+    background-color: #72d1a8;
+    color: white;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: transparent;
+}
+</style> 

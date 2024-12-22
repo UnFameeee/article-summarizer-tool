@@ -1,29 +1,117 @@
-<div class="container">
-    <h1 class="mb-4">Summary Detail</h1>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Back button -->
+            <a href="/" class="btn btn-link mb-4">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Dashboard
+            </a>
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Original URL</h5>
-            <p class="card-text">
-                <a href="<%= summary.url %>" target="_blank"><%= summary.url %></a>
-            </p>
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <!-- URL Section -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-link text-primary me-2"></i>
+                            <h5 class="mb-0">Source URL</h5>
+                        </div>
+                        <a href="<%= summary.url %>" target="_blank" class="d-block p-3 bg-light rounded text-break hover-link">
+                            <%= summary.url %>
+                            <i class="fas fa-external-link-alt ms-2 small"></i>
+                        </a>
+                    </div>
 
-            <h5 class="card-title mt-4">Summary Level</h5>
-            <p class="card-text">
-                <span class="badge bg-primary"><%= summary.summary_level %></span>
-            </p>
+                    <!-- Summary Level -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-layer-group text-primary me-2"></i>
+                            <h5 class="mb-0">Summary Level</h5>
+                        </div>
+                        <span class="badge bg-primary px-3 py-2 rounded-pill">
+                            <%= summary.summary_level.charAt(0).toUpperCase() + summary.summary_level.slice(1) %>
+                        </span>
+                    </div>
 
-            <h5 class="card-title mt-4">Used Prompt</h5>
-            <p class="card-text"><%= summary.prompt %></p>
+                    <!-- Prompt Section -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-quote-left text-primary me-2"></i>
+                            <h5 class="mb-0">Used Prompt</h5>
+                        </div>
+                        <div class="prompt-box p-3 bg-light rounded">
+                            <%= summary.prompt || 'Default prompt was used' %>
+                        </div>
+                    </div>
 
-            <h5 class="card-title mt-4">Summary Content</h5>
-            <div class="card-text summary-content">
-                <%- summary.summary_html %>
-            </div>
+                    <!-- Summary Content -->
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-file-alt text-primary me-2"></i>
+                            <h5 class="mb-0">Summary Content</h5>
+                        </div>
+                        <div class="summary-content bg-white rounded p-4 border">
+                            <%- summary.summary_html %>
+                        </div>
+                    </div>
 
-            <div class="mt-4 text-muted">
-                Created at: <%= new Date(summary.created_at).toLocaleString() %>
+                    <!-- Metadata -->
+                    <div class="text-muted small">
+                        <i class="fas fa-clock me-2"></i>
+                        Created at: <%= new Date(summary.created_at).toLocaleString() %>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+<style>
+.text-primary {
+    color: #72d1a8 !important;
+}
+
+.bg-primary {
+    background-color: #72d1a8 !important;
+}
+
+.hover-link {
+    text-decoration: none;
+    color: #2d3436;
+    transition: all 0.3s ease;
+}
+
+.hover-link:hover {
+    background-color: #e9ecef;
+    color: #72d1a8;
+}
+
+.prompt-box {
+    font-family: 'Courier New', monospace;
+    color: #2d3436;
+    line-height: 1.6;
+}
+
+.summary-content {
+    /* box-shadow: inset 0 0 0.5rem rgba(0,0,0,.05); */
+}
+
+.badge {
+    font-weight: 500;
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+}
+
+.btn-link {
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0;
+    color: #636e72;
+}
+
+.btn-link:hover {
+    color: #72d1a8;
+}
+</style> 

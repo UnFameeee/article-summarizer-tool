@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Web Summarizer",
+  "name": "Chunk Sum",
   "version": "1.0",
   "description": "Summarize web content using Google Gemini API",
   "permissions": [

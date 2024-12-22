@@ -121,6 +121,14 @@ async function initializeDatabase() {
             await connection.query('ALTER TABLE summaries CHANGE new_id id VARCHAR(36) PRIMARY KEY');
         }
 
+        // Add title column if not exists
+        await addColumnIfNotExists(
+            connection, 
+            'summaries', 
+            'title', 
+            'TEXT'
+        );
+
         console.log('Database and tables initialized successfully');
         await connection.end();
         
