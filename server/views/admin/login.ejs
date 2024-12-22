@@ -1,0 +1,92 @@
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Admin Login</h2>
+                    
+                    <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+                    
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-primary {
+        background-color: #72d1a8;
+        border-color: #72d1a8;
+    }
+    
+    .btn-primary:hover,
+    .btn-primary:focus {
+        background-color: #5fb892;
+        border-color: #5fb892;
+    }
+    
+    .form-control:focus {
+        border-color: #72d1a8;
+        box-shadow: 0 0 0 0.2rem rgba(114, 209, 168, 0.25);
+    }
+</style>
+
+<script>
+// Check if already logged in
+if (localStorage.getItem('adminToken')) {
+    window.location.href = '/admin/dashboard';
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Logging in...';
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('error-message');
+    
+    try {
+        const response = await fetch('/admin/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Save token and redirect
+            localStorage.setItem('adminToken', data.token);
+            window.location.href = '/admin/dashboard';
+        } else {
+            errorDiv.textContent = data.error;
+            errorDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Login';
+        }
+    } catch (error) {
+        errorDiv.textContent = 'An error occurred. Please try again.';
+        errorDiv.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Login';
+    }
+});
+</script> 

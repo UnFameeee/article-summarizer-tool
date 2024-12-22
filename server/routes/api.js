@@ -77,7 +77,7 @@ router.get('/latest-summary', async (req, res) => {
 
         // Get latest user prompt for this user
         const [userPrompts] = await db.execute(
-            'SELECT * FROM user_prompts WHERE user_id = ? ORDER BY created_at DESC LIMIT 1',
+            'SELECT * FROM user_prompts WHERE user_id = ? AND deleted = FALSE ORDER BY created_at DESC LIMIT 1',
             [userId]
         );
 
@@ -86,7 +86,7 @@ router.get('/latest-summary', async (req, res) => {
             'SELECT s.*, up.prompt as user_prompt, up.summary_level as user_prompt_level ' +
             'FROM summaries s ' +
             'LEFT JOIN user_prompts up ON s.user_prompt_id = up.id ' +
-            'WHERE s.url = ? ' +
+            'WHERE s.url = ? AND s.deleted = FALSE ' +
             'ORDER BY s.created_at DESC LIMIT 1',
             [url]
         );

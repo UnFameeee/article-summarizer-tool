@@ -13,19 +13,19 @@ router.get('/:id', async (req, res) => {
             });
         }
 
-        const [rows] = await db.execute(
-            'SELECT * FROM summaries WHERE id = ?',
+        const [summaries] = await db.execute(
+            'SELECT * FROM summaries WHERE id = ? AND deleted = FALSE',
             [req.params.id]
         );
 
-        if (rows.length === 0) {
+        if (summaries.length === 0) {
             return res.status(404).render('error', {
                 message: 'Summary not found'
             });
         }
 
         res.render('summary-detail', {
-            summary: rows[0]
+            summary: summaries[0]
         });
 
     } catch (error) {
