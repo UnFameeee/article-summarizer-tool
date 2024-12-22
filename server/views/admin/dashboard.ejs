@@ -1,0 +1,297 @@
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Admin Dashboard</h1>
+        <button id="logoutBtn" class="btn btn-outline-danger">
+            <i class="fas fa-sign-out-alt me-2"></i>Logout
+        </button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <!-- Search Bar -->
+            <div class="mb-4">
+                <form class="d-flex gap-2" id="searchForm">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        placeholder="Search summaries..." 
+                        name="search"
+                        value="<%= search %>"
+                    >
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search text-white"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th class="text-muted fw-semibold sortable" data-sort="title">
+                                Title
+                                <i class="fas fa-sort<%= sortBy === 'title' ? (sortOrder === 'ASC' ? '-up' : '-down') : '' %>"></i>
+                            </th>
+                            <th class="text-muted fw-semibold sortable" data-sort="url">
+                                URL
+                                <i class="fas fa-sort<%= sortBy === 'url' ? (sortOrder === 'ASC' ? '-up' : '-down') : '' %>"></i>
+                            </th>
+                            <th class="text-muted fw-semibold sortable" data-sort="summary_level">
+                                Level
+                                <i class="fas fa-sort<%= sortBy === 'summary_level' ? (sortOrder === 'ASC' ? '-up' : '-down') : '' %>"></i>
+                            </th>
+                            <th class="text-muted fw-semibold sortable" data-sort="created_at">
+                                Created At
+                                <i class="fas fa-sort<%= sortBy === 'created_at' ? (sortOrder === 'ASC' ? '-up' : '-down') : '' %>"></i>
+                            </th>
+                            <th class="text-muted fw-semibold text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summariesTable">
+                        <% summaries.forEach(function(summary) { %>
+                            <tr>
+                                <td class="fw-medium"><%= summary.title %></td>
+                                <td class="text-truncate" style="max-width: 200px;">
+                                    <a href="<%= summary.url %>" target="_blank" class="hover-link">
+                                        <i class="fas fa-link me-1 text-primary"></i>
+                                        <%= summary.url %>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary px-3 py-2 rounded-pill">
+                                        <%= summary.summary_level.charAt(0).toUpperCase() + summary.summary_level.slice(1) %>
+                                    </span>
+                                </td>
+                                <td class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    <%= new Date(summary.created_at).toLocaleString() %>
+                                </td>
+                                <td class="actions-cell">
+                                    <a href="/admin/summary/<%= summary.id %>" class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="<%= summary.id %>">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <% for(let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="/admin/dashboard?page=<%= i %>&search=<%= search %>&sortBy=<%= sortBy %>&sortOrder=<%= sortOrder %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is logged in
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+        window.location.href = '/admin/login';
+        return;
+    }
+
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('adminToken');
+        window.location.href = '/admin/login';
+    });
+
+    // Delete handlers
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            if (confirm('Are you sure you want to delete this summary?')) {
+                const id = this.dataset.id;
+                const token = localStorage.getItem('adminToken');
+                
+                try {
+                    const response = await fetch(`/admin/summaries/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        this.closest('tr').remove();
+                    } else {
+                        alert('Failed to delete summary');
+                    }
+                } catch (error) {
+                    alert('An error occurred');
+                }
+            }
+        });
+    });
+
+    // Handle sorting
+    document.querySelectorAll('.sortable').forEach(th => {
+        th.addEventListener('click', function() {
+            const sort = this.dataset.sort;
+            const currentOrder = '<%= sortOrder %>';
+            const newOrder = sort === '<%= sortBy %>' && currentOrder === 'ASC' ? 'DESC' : 'ASC';
+            
+            const url = new URL(window.location.href);
+            url.searchParams.set('sortBy', sort);
+            url.searchParams.set('sortOrder', newOrder);
+            window.location.href = url.toString();
+        });
+    });
+
+    // Handle search form
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = searchForm.querySelector('input[name="search"]');
+    let searchTimeout;
+
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        updateSearch();
+    });
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(updateSearch, 500);
+    });
+
+    function updateSearch() {
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', searchInput.value);
+        url.searchParams.delete('page'); // Reset to first page when searching
+        window.location.href = url.toString();
+    }
+});
+</script> 
+
+<style>
+    .bg-primary {
+        background-color: #72d1a8 !important;
+    }
+
+    .text-primary {
+        color: #72d1a8 !important;
+    }
+
+    .hover-link {
+        text-decoration: none;
+        color: #2d3436;
+        transition: color 0.3s ease;
+    }
+
+    .hover-link:hover {
+        color: #72d1a8;
+    }
+
+    .btn-outline-danger {
+        transition: all 0.3s ease;
+    }
+
+    .page-link {
+        color: #72d1a8;
+        border: none;
+        padding: 0.5rem 0.75rem;
+        margin: 0 0.25rem;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .page-link:hover {
+        background-color: #e9ecef;
+        color: #72d1a8;
+    }
+
+    .page-item.active .page-link {
+        background-color: #72d1a8;
+        color: white;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 1rem;
+    }
+
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .btn-outline-primary {
+        color: #72d1a8;
+        border-color: #72d1a8;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #72d1a8;
+        border-color: #72d1a8;
+        color: white;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+
+    .btn {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .actions-cell {
+        text-align: center;
+        white-space: nowrap;
+        width: 1%;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .actions-cell .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+    }
+
+    .actions-cell .btn i {
+        font-size: 0.875rem;
+    }
+
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .sortable i {
+        margin-left: 5px;
+        font-size: 0.875rem;
+        opacity: 0.5;
+    }
+
+    .sortable:hover i {
+        opacity: 1;
+    }
+
+    .btn-primary {
+        background-color: #72d1a8;
+        border-color: #72d1a8;
+    }
+
+    .btn-primary:hover {
+        background-color: #5fb892;
+        border-color: #5fb892;
+    }
+</style> 

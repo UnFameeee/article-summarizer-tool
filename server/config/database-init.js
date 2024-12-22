@@ -48,7 +48,8 @@ async function initializeDatabase() {
                 user_id VARCHAR(255),
                 prompt TEXT NOT NULL,
                 summary_level ENUM('short', 'medium', 'detailed') NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                deleted BOOLEAN DEFAULT FALSE
             )
         `);
 
@@ -61,7 +62,9 @@ async function initializeDatabase() {
                 prompt TEXT NOT NULL,
                 summary_level ENUM('short', 'medium', 'detailed') NOT NULL,
                 summary_html TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                deleted BOOLEAN DEFAULT FALSE,
+                deleted_at TIMESTAMP NULL
             )
         `);
 
@@ -127,6 +130,31 @@ async function initializeDatabase() {
             'summaries', 
             'title', 
             'TEXT'
+        );
+
+        // Add admin table
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS admins (
+                id VARCHAR(36) PRIMARY KEY,
+                username VARCHAR(255) NOT NULL UNIQUE,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                deleted BOOLEAN DEFAULT FALSE
+            )
+        `);
+
+        // Add deleted column if not exists to existing tables
+        await addColumnIfNotExists(connection, 'summaries', 'deleted', 'BOOLEAN DEFAULT FALSE');
+        await addColumnIfNotExists(connection, 'user_prompts', 'deleted', 'BOOLEAN DEFAULT FALSE');
+        await addColumnIfNotExists(connection, 'admins', 'deleted', 'BOOLEAN DEFAULT FALSE');
+
+        // Add deleted_at column if not exists
+        await addColumnIfNotExists(
+            connection, 
+            'summaries', 
+            'deleted_at', 
+            'TIMESTAMP NULL'
         );
 
         console.log('Database and tables initialized successfully');

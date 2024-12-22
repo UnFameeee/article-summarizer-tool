@@ -1,0 +1,32 @@
+Requirement: Admin Login và Bảo Vệ Server
+1. Functional Requirements
+Admin Login
+Đăng nhập Admin:
+Admin có thể đăng nhập vào hệ thống thông qua giao diện login.
+Yêu cầu xác thực thông tin đăng nhập bằng email/username và mật khẩu.
+Mật khẩu phải được mã hóa (hash) trước khi lưu vào cơ sở dữ liệu (sử dụng thư viện như bcrypt).
+Sau khi đăng nhập thành công, Admin sẽ được cấp một JWT (JSON Web Token) để xác thực các request tiếp theo.
+Token sẽ có thời hạn (ví dụ: 1 giờ) và cần được làm mới khi hết hạn.
+Quản lý CRUD các block summary:
+Admin có thể thực hiện các thao tác sau:
+Read: Xem danh sách các block summary, với khả năng phân trang (pagination).
+Delete: Xóa một block summary.
+Tất cả các thao tác RD chỉ có thể được thực hiện bởi Admin đã đăng nhập.
+Bảo vệ server khỏi DDoS và spam
+Giới hạn số lượng request (Rate Limiting):
+Áp dụng giới hạn số lượng request từ một IP trong một khoảng thời gian nhất định (ví dụ: 100 requests/phút).
+Nếu một IP vượt quá giới hạn, server sẽ trả về mã lỗi HTTP 429 Too Many Requests.
+Phát hiện và chặn spam/DDoS:
+Sử dụng middleware để theo dõi hành vi bất thường, như:
+Gửi quá nhiều request trong thời gian ngắn.
+Gửi các request không hợp lệ hoặc cố tình gây lỗi.
+Nếu phát hiện hành vi spam, IP của client sẽ bị ban (chặn) trong một khoảng thời gian (ví dụ: 1 giờ).
+Các IP bị ban sẽ được lưu vào một danh sách (blocklist) trong bộ nhớ hoặc cơ sở dữ liệu.
+Bảo vệ form đăng nhập:
+Áp dụng brute force protection:
+Giới hạn số lần thử đăng nhập thất bại từ một IP (ví dụ: 5 lần trong 10 phút).
+Nếu vượt quá giới hạn, IP sẽ bị tạm thời chặn trong một khoảng thời gian (ví dụ: 15 phút).
+Sử dụng CAPTCHA (như Google reCAPTCHA) để ngăn chặn bot tự động gửi request đến form đăng nhập.
+Bảo vệ chống DDoS:
+Sử dụng các công cụ hoặc dịch vụ bảo vệ DDoS như Cloudflare, AWS Shield, hoặc rate-limiting middleware (như express-rate-limit).
+Phát hiện và chặn các request từ các IP có hành vi bất thường (ví dụ: gửi request đồng thời từ nhiều IP).

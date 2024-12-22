@@ -2,12 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
+const cookieParser = require('cookie-parser');
 const initializeDatabase = require('./config/database-init');
+const { apiLimiter } = require('./middleware/auth');
 
 // Import routes
 const apiRoutes = require('./routes/api');
 const summaryDetailRoutes = require('./routes/summary-detail');
 const dashboardRoutes = require('./routes/dashboard');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -24,11 +27,14 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(apiLimiter);
 
 // Routes
-app.use('/api', apiRoutes);
+app.use('/api', apiLimiter, apiRoutes);
 app.use('/summary', summaryDetailRoutes);
 app.use('/', dashboardRoutes);
+app.use('/admin', adminRoutes);
 
 // Initialize database
 initializeDatabase().catch(console.error);

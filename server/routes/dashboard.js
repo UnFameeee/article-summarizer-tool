@@ -27,6 +27,8 @@ router.get('/', async (req, res) => {
             params.push(levelFilter);
         }
 
+        whereClause += ' AND deleted = FALSE';
+
         // Get total count with filters
         const [countResult] = await db.query(
             `SELECT COUNT(*) as total FROM summaries WHERE ${whereClause}`,
