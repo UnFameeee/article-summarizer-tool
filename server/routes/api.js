@@ -12,6 +12,12 @@ async function extractMainContent(url) {
         const response = await axios.get(url);
         const $ = cheerio.load(response.data);
 
+        // Extract page title from h1 or title tag
+        let pageTitle = '';
+        const h1 = $('h1').first().text().trim();
+        const titleTag = $('title').text().trim();
+        pageTitle = h1 || titleTag || 'Tóm tắt';
+
         // Remove unwanted elements
         $('script, style, iframe, nav, header, footer, aside').remove();
 
@@ -47,7 +53,10 @@ async function extractMainContent(url) {
             content = paragraphs.join('\n\n');
         }
 
-        return content.trim();
+        return {
+            title: pageTitle,
+            content: content.trim()
+        };
     } catch (error) {
         console.error('Error extracting content:', error);
         throw new Error('Failed to extract content from URL');
@@ -122,7 +131,7 @@ router.post('/summarize', async (req, res) => {
             userPromptId = promptId;
         }
 
-        const content = await extractMainContent(url);
+        const { title, content } = await extractMainContent(url);
 
         if (!content) {
             return res.status(400).json({
@@ -130,12 +139,12 @@ router.post('/summarize', async (req, res) => {
             });
         }
 
-        const summary = await generateSummary(content, '', summaryLevel, prompt);
+        const summary = await generateSummary(content, summaryLevel, prompt, title);
 
         // Save to database with UUID and user_prompt_id
         await db.execute(
-            'INSERT INTO summaries (id, url, content, prompt, summary_level, summary_html, user_prompt_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [summaryId, url, content, prompt || '', summaryLevel || 'medium', summary, userPromptId]
+            'INSERT INTO summaries (id, url, content, prompt, summary_level, summary_html, user_prompt_id, title) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [summaryId, url, content, prompt || '', summaryLevel || 'medium', summary, userPromptId, title]
         );
 
         res.json({ 

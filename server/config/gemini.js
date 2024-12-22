@@ -12,11 +12,11 @@ const MAX_CONTENT_LENGTH = process.env.MAX_CONTENT_LENGTH || 7000000;
 const MAX_CUSTOM_PROMPT_LENGTH = process.env.MAX_CUSTOM_PROMPT_LENGTH || 5000;
 
 // Function to create HTML template
-function createHtmlTemplate() {
+function createHtmlTemplate(title) {
     return ` 
 Format the output using this HTML structure:
 <div class="summary-content">
-    <h1 style="text-align: center; color: #72d1a8; font-family: Arial, sans-serif; margin-bottom: 20px; font-size: 18px;">Tóm tắt</h1>
+    <h1 style="text-align: center; color: #72d1a8; font-family: Arial, sans-serif; margin-bottom: 20px; font-size: 18px;">${title}</h1>
     
     <h2 style="color: #72d1a8; margin-top: 20px; font-family: Arial, sans-serif; font-size: 18px;">Key Points</h2>
     <ul style="line-height: 1.6; margin-bottom: 20px; font-size: 15px;">
@@ -62,7 +62,7 @@ function validateCustomPrompt(prompt) {
 }
 
 // Function to create prompt
-function createPrompt(content, keywords = '', level = 'medium', customPrompt = '') {
+function createPrompt(content, level = 'medium', customPrompt = '', title = 'Tóm tắt') {
     try {
         // Validate and process inputs
         content = processContent(content);
@@ -88,23 +88,13 @@ function createPrompt(content, keywords = '', level = 'medium', customPrompt = '
         basePrompt += `. Limit the summary to approximately ${maxLength} characters`;
 
         // Add HTML template requirement
-        basePrompt += `. ${createHtmlTemplate()}`;
+        basePrompt += `. ${createHtmlTemplate(title)}`;
 
         // Add language detection instruction
         basePrompt += '\nDetect if a language is mentioned in the prompt and use it as the primary language for the summary. If no language is mentioned, default to the language of the original content before summarizing.';
 
-        // Add keywords if provided
-        if (keywords) {
-            basePrompt += `\nEnsure to focus on and highlight these keywords: ${keywords}`;
-        }
-
-        // Clean up content by removing extra whitespace and empty lines
-        const cleanContent = content
-            .replace(/\n\s*\n/g, '\n') // Replace multiple newlines with single newline
-            .replace(/\s+/g, ' ')      // Replace multiple spaces with single space
-            .trim();                    // Remove leading/trailing whitespace
-
-        basePrompt += `\n\nContent to summarize:\n${cleanContent}`;
+        // Add the content
+        basePrompt += `\n\nContent to summarize:\n${content}`;
 
         // Log the prompt (without actual content for clarity)
         const logPrompt = basePrompt;
@@ -121,9 +111,9 @@ function createPrompt(content, keywords = '', level = 'medium', customPrompt = '
 }
 
 // Function to generate summary
-async function generateSummary(content, keywords = '', level = 'medium', customPrompt = '') {
+async function generateSummary(content, level = 'medium', customPrompt = '', title = 'Tóm tắt') {
     try {
-        const prompt = createPrompt(content, keywords, level, customPrompt);
+        const prompt = createPrompt(content, level, customPrompt, title);
         const result = await model.generateContent(prompt);
         const response = await result.response;
         return response.text();
