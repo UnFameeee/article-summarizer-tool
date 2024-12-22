@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Chunk Sum",
   "version": "1.0",
-  "description": "Summarize web content using Google Gemini API",
+  "description": "Summarize web content concisely with custom prompts, delivering tailored, clear, and essential information efficiently.",
   "permissions": [
     "activeTab",
     "storage",
