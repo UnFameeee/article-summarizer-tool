@@ -17,6 +17,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('layout', 'layouts/main');
 
+// Serve static files
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
 // Middleware
 app.use(cors());
 app.use(express.json());

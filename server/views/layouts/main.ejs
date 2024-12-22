@@ -21,12 +21,32 @@
         .navbar {
             box-shadow: 0 2px 4px rgba(0,0,0,.08);
             background-color: #fff;
+            padding: 0.75rem 0;
         }
 
         .navbar-brand {
-            font-weight: 700;
-            color: #2d3436;
-            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            padding: 0;
+        }
+
+        .navbar-logo {
+            height: 45px;
+            width: auto;
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+            width: 180px;
+            object-fit: cover;
+        }
+
+        .navbar-brand:hover .navbar-logo {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .navbar-logo {
+                height: 35px;
+            }
         }
 
         .nav-link {
@@ -136,6 +156,11 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        .brand-text {
+            color: #72d1a8;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -143,8 +168,7 @@
     <nav class="navbar navbar-expand-lg navbar-light mb-4">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-book-reader me-2"></i>
-                Chunk Sum
+                <img src="/assets/logo.jpeg" alt="Chunk Sum Logo" class="navbar-logo me-2">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
