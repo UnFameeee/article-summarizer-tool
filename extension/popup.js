@@ -8,9 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const textarea = document.getElementById('customPrompt');
     const currentCount = document.getElementById('currentCount');
     
-    // Get API endpoint from manifest
-    const manifest = chrome.runtime.getManifest();
-    const API_ENDPOINT = manifest.config.apiEndpoint;
+    // Get API endpoint from config
+    const API_ENDPOINT = config.apiEndpoint;
     
     // Character count function
     function updateCharCount() {

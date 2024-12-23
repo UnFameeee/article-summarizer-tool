@@ -1,4 +1,19 @@
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="24" cy="24" r="22.5" fill="#72d1a8" stroke="#a4e7d5" stroke-width="3"/>
-    <text x="24" y="34" font-family="Arial" font-size="30" fill="white" text-anchor="middle">CS</text>
-</svg> 
+  <!-- Circular background -->
+  <circle cx="24" cy="24" r="24" fill="#72d1a8"/>
+  
+  <!-- Letter C -->
+  <path d="M37.5 16.5c-3-4.5-8.1-7.5-13.875-7.5c-9.3 0-16.875 7.575-16.875 16.875s7.575 16.875 16.875 16.875c5.775 0 10.875-3 13.875-7.5"
+    fill="none" 
+    stroke="white"
+    stroke-width="4.5"
+    stroke-linecap="round"
+    transform="translate(0, -1.875)"/>
+    
+  <!-- Letter S -->
+  <path d="M28.5 20.25c0-1.035-0.84-1.875-1.875-1.875h-4.5c-1.035 0-1.875 0.84-1.875 1.875v2.25c0 1.035 0.84 1.875 1.875 1.875h4.5c1.035 0 1.875 0.84 1.875 1.875v2.25c0 1.035-0.84 1.875-1.875 1.875h-4.5c-1.035 0-1.875-0.84-1.875-1.875"
+    fill="none"
+    stroke="white" 
+    stroke-width="3"
+    stroke-linecap="round"/>
+</svg>
