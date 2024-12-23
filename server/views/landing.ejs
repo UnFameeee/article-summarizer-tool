@@ -1,0 +1,580 @@
+<div class="landing-page">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">
+                        Transform Web Content into 
+                        <span class="text-primary">Clear Summaries</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Chunk Sum helps you digest web content efficiently with AI-powered summaries tailored to your needs.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="https://chrome.google.com/webstore/detail/<%= extensionId %>" target="_blank" class="btn btn-primary btn-lg">
+                            <i class="fab fa-chrome me-2"></i>
+                            Add to Chrome
+                        </a>
+                        <a href="/dashboard" class="btn btn-outline-primary btn-lg ms-3" onclick="window.location.href='/dashboard'; return false;">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            View Dashboard
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <!-- Demo Extension UI -->
+                    <div class="extension-demo">
+                        <!-- Custom Prompt -->
+                        <div class="settings-section">
+                            <h4>
+                                <i class="fas fa-pencil-alt"></i>
+                                Custom Prompt
+                            </h4>
+                            <div class="prompt-container">
+                                <textarea class="custom-prompt" rows="4" disabled>Summarize this article about AI technology trends, focusing on key developments and future implications.</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Summary Level -->
+                        <div class="settings-section">
+                            <h4>
+                                <i class="fas fa-layer-group"></i>
+                                Summary Level
+                            </h4>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="short" name="demoLevel" value="short">
+                                    <label for="short">
+                                        <span class="emoji">🔖</span>
+                                        Short
+                                    </label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="medium" name="demoLevel" value="medium" checked>
+                                    <label for="medium">
+                                        <span class="emoji">📝</span>
+                                        Medium
+                                    </label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="detailed" name="demoLevel" value="detailed">
+                                    <label for="detailed">
+                                        <span class="emoji">📁</span>
+                                        Detailed
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Result -->
+                        <div id="demoSummary" class="summary-result">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title text-center">Key Features</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h3>AI-Powered Summaries</h3>
+                        <p>Get intelligent summaries of any web content with our advanced AI technology.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <h3>Customizable Length</h3>
+                        <p>Choose between short, medium, or detailed summaries based on your needs.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h3>Custom Prompts</h3>
+                        <p>Use custom prompts to get summaries focused on specific aspects or in different languages.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title text-center">How It Works</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Install Extension</h3>
+                        <p>Add Chunk Sum to Chrome with just one click.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Select Content</h3>
+                        <p>Click the extension icon on any webpage you want to summarize.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Get Summary</h3>
+                        <p>Receive your customized summary instantly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container text-center">
+            <h2>Start Summarizing Today</h2>
+            <p>Join thousands of users who save time with Chunk Sum</p>
+            <a href="https://chrome.google.com/webstore/detail/<%= extensionId %>" target="_blank" class="btn btn-primary btn-lg">
+                <i class="fab fa-chrome me-2"></i>
+                Add to Chrome - It's Free
+            </a>
+        </div>
+    </section>
+</div>
+
+<style>
+.landing-page {
+    overflow-x: hidden;
+}
+
+.hero {
+    padding: 20px 0 100px;
+    background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: #636e72;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.hero-image {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.hero-buttons .btn {
+    padding: 12px 24px;
+    font-weight: 600;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    color: #2d3436;
+}
+
+.features {
+    padding: 100px 0;
+    background-color: #ffffff;
+}
+
+.feature-card {
+    padding: 2rem;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1.5rem;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-icon i {
+    font-size: 2rem;
+    color: #72d1a8;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2d3436;
+}
+
+.feature-card p {
+    color: #636e72;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.how-it-works {
+    padding: 100px 0;
+    background-color: #f8f9fa;
+}
+
+.step-card {
+    padding: 2rem;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 1rem;
+    background: #72d1a8;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.step-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2d3436;
+}
+
+.step-card p {
+    color: #636e72;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.cta {
+    padding: 100px 0;
+    background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+}
+
+.cta h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #2d3436;
+}
+
+.cta p {
+    font-size: 1.25rem;
+    color: #636e72;
+    margin-bottom: 2rem;
+}
+
+.btn-primary {
+    background-color: #72d1a8;
+    border-color: #72d1a8;
+}
+
+.btn-primary:hover {
+    background-color: #5fb892;
+    border-color: #5fb892;
+}
+
+.btn-outline-primary {
+    color: #72d1a8;
+    border-color: #72d1a8;
+}
+
+.btn-outline-primary:hover {
+    background-color: #72d1a8;
+    border-color: #72d1a8;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 50px 0;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-image {
+        margin-top: 3rem;
+    }
+
+    .hero-buttons .btn {
+        display: block;
+        width: 100%;
+        margin: 1rem 0;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+}
+
+/* Extension Demo Styles */
+.radio-group {
+    display: flex;
+    gap: 15px;
+}
+
+.radio-option {
+    flex: 1;
+    position: relative;
+}
+
+.radio-option input[type="radio"] {
+    display: none;
+}
+
+.radio-option label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    text-align: center;
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.radio-option input[type="radio"]:checked + label {
+    background: #72d1a8;
+    color: #fff;
+    border-color: #72d1a8;
+}
+
+.emoji {
+    font-size: 1rem;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.extension-demo {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.settings-section {
+    margin-bottom: 24px;
+}
+
+.settings-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #636e72;
+}
+
+.custom-prompt {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.875rem;
+    background-color: #f8f9fa;
+    resize: none;
+    color: #2d3436;
+}
+
+.summary-result {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 24px;
+    height: 300px;
+    border: 2px solid #e9ecef;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Custom scrollbar styles */
+.summary-result::-webkit-scrollbar {
+    width: 8px;
+}
+
+.summary-result::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.summary-result::-webkit-scrollbar-thumb {
+    background: #72d1a8;
+    border-radius: 4px;
+}
+
+.summary-result::-webkit-scrollbar-thumb:hover {
+    background: #5fb892;
+}
+
+.summary-content {
+    font-family: Arial, sans-serif;
+    padding-right: 8px;
+}
+
+.summary-content h1 {
+    text-align: center;
+    color: #72d1a8;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.summary-content h2 {
+    color: #72d1a8;
+    font-size: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.summary-content ul {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.summary-content li {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #2d3436;
+}
+</style>
+
+<!-- Demo Summary Data -->
+<script>
+const summaryData = {
+    short: `<div class="summary-content">
+        <h1>AI Technology Trends 2024</h1>
+        <h2>Key Points</h2>
+        <ul>
+            <li>Generative AI continues rapid advancement</li>
+            <li>Edge AI adoption increasing</li>
+            <li>AI regulation becoming priority</li>
+        </ul>
+    </div>`,
+    medium: `<div class="summary-content">
+        <h1>AI Technology Trends 2024</h1>
+        <h2>Key Points</h2>
+        <ul>
+            <li>Generative AI sees major improvements in accuracy and efficiency</li>
+            <li>Edge AI enables faster, more private computing</li>
+            <li>Global AI regulations being developed</li>
+            <li>AI integration in healthcare accelerating</li>
+        </ul>
+        <h2>Impact Areas</h2>
+        <ul>
+            <li>Healthcare diagnostics and treatment</li>
+            <li>Business automation and productivity</li>
+            <li>Environmental monitoring and protection</li>
+        </ul>
+    </div>`,
+    detailed: `<div class="summary-content">
+        <h1>AI Technology Trends 2024</h1>
+        <h2>Key Points</h2>
+        <ul>
+            <li>Generative AI models achieve new benchmarks in accuracy and efficiency</li>
+            <li>Edge AI deployment enables real-time processing and enhanced privacy</li>
+            <li>Global AI regulations focus on ethics and transparency</li>
+            <li>Healthcare AI applications show promising clinical results</li>
+            <li>Sustainable AI practices gaining importance</li>
+        </ul>
+        <h2>Impact Areas</h2>
+        <ul>
+            <li>Healthcare: Improved diagnostics, personalized treatment plans</li>
+            <li>Business: Enhanced automation, decision-making support</li>
+            <li>Environment: Better monitoring, resource optimization</li>
+            <li>Education: Personalized learning experiences</li>
+            <li>Research: Accelerated scientific discoveries</li>
+        </ul>
+        <h2>Future Implications</h2>
+        <ul>
+            <li>Increased need for AI literacy and education</li>
+            <li>Growing importance of ethical AI development</li>
+            <li>Evolution of workforce skills and roles</li>
+        </ul>
+    </div>`
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const demoSummary = document.getElementById('demoSummary');
+    const radioButtons = document.querySelectorAll('input[name="demoLevel"]');
+    
+    // Set initial summary
+    demoSummary.innerHTML = summaryData.medium;
+    
+    // Update summary when level changes
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            demoSummary.style.opacity = '0';
+            setTimeout(() => {
+                demoSummary.innerHTML = summaryData[this.value];
+                demoSummary.style.opacity = '1';
+            }, 200);
+        });
+    });
+});
+</script>
+
+<style>
+.summary-result {
+    transition: opacity 0.2s ease;
+}
+</style> 

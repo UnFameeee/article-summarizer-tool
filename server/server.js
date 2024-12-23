@@ -33,7 +33,19 @@ app.use(apiLimiter);
 // Routes
 app.use('/api', apiLimiter, apiRoutes);
 app.use('/summary', summaryDetailRoutes);
-app.use('/', dashboardRoutes);
+
+// Landing page route
+app.get('/', (req, res) => {
+    res.render('landing', {
+        title: 'Chunk Sum - AI-Powered Web Content Summarizer',
+        layout: 'layouts/main',
+        extensionId: process.env.EXTENSION_ID
+    });
+});
+
+// Dashboard routes - only handle /dashboard path
+app.use('/dashboard', dashboardRoutes);
+
 app.use('/admin', adminRoutes);
 
 // Add privacy policy route
