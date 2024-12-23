@@ -36,6 +36,15 @@ app.use('/summary', summaryDetailRoutes);
 app.use('/', dashboardRoutes);
 app.use('/admin', adminRoutes);
 
+// Add privacy policy route
+app.get('/privacy-policy', (req, res) => {
+    res.render('privacy-policy', {
+        title: 'Privacy Policy',
+        layout: 'layouts/main',
+        path: '/privacy-policy'
+    });
+});
+
 // Initialize database
 initializeDatabase().catch(console.error);
 

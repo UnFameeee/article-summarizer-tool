@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const textarea = document.getElementById('customPrompt');
     const currentCount = document.getElementById('currentCount');
     
+    // Get API endpoint from config
+    const API_ENDPOINT = config.apiEndpoint;
+    
     // Character count function
     function updateCharCount() {
         const count = textarea.value.length;
@@ -43,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Fetch latest data from server
-            const response = await fetch(`http://localhost:3000/api/latest-summary?url=${encodeURIComponent(tab.url)}&userId=${userId}`);
+            const response = await fetch(`${API_ENDPOINT}/api/latest-summary?url=${encodeURIComponent(tab.url)}&userId=${userId}`);
             const data = await response.json();
 
             if (data.success) {
@@ -64,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         viewDetailBtn.style.display = 'block';
                         viewDetailBtn.onclick = () => {
                             chrome.tabs.create({
-                                url: `http://localhost:3000/summary/${data.data.latestSummary.id}`
+                                url: `${API_ENDPOINT}/summary/${data.data.latestSummary.id}`
                             });
                         };
                     }
@@ -94,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const summaryLevel = document.querySelector('input[name="summaryLevel"]:checked').value;
 
             // Send request to server
-            const response = await fetch('http://localhost:3000/api/summarize', {
+            const response = await fetch(`${API_ENDPOINT}/api/summarize`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -122,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 viewDetailBtn.style.display = 'block';
                 viewDetailBtn.onclick = () => {
                     chrome.tabs.create({
-                        url: `http://localhost:3000/summary/${data.data.id}`
+                        url: `${API_ENDPOINT}/summary/${data.data.id}`
                     });
                 };
             }
