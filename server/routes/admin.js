@@ -180,4 +180,45 @@ router.get('/summary/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// GET request logs
+router.get('/logs', authenticateToken, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 50;
+        const offset = (page - 1) * limit;
+
+        // Get total count
+        const [countResult] = await db.query(
+            'SELECT COUNT(*) as total FROM request_logs WHERE is_deleted = FALSE'
+        );
+        const totalItems = countResult[0].total;
+        const totalPages = Math.ceil(totalItems / limit);
+
+        // Fetch paginated logs
+        const [logs] = await db.query(
+            `SELECT * FROM request_logs 
+             WHERE is_deleted = FALSE 
+             ORDER BY created_at DESC 
+             LIMIT ?, ?`,
+            [offset, limit]
+        );
+
+        res.render('admin/logs', {
+            logs,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            lastPage: totalPages
+        });
+    } catch (error) {
+        console.error('Error fetching logs:', error);
+        res.status(500).render('error', {
+            message: 'Failed to load logs'
+        });
+    }
+});
+
 module.exports = router; 

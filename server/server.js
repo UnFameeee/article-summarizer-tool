@@ -5,6 +5,7 @@ const expressLayouts = require('express-ejs-layouts');
 const cookieParser = require('cookie-parser');
 const initializeDatabase = require('./config/database-init');
 const { apiLimiter } = require('./middleware/auth');
+const requestLogger = require('./middleware/request-logger');
 
 // Import routes
 const apiRoutes = require('./routes/api');
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(apiLimiter);
+app.use('/api', requestLogger);
 
 // Routes
 app.use('/api', apiLimiter, apiRoutes);

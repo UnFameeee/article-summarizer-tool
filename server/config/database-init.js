@@ -157,6 +157,23 @@ async function initializeDatabase() {
             'TIMESTAMP NULL'
         );
 
+        // Create request_logs table
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS request_logs (
+                id VARCHAR(36) PRIMARY KEY,
+                ip_address VARCHAR(45) NOT NULL,
+                user_agent TEXT NOT NULL,
+                endpoint VARCHAR(255) NOT NULL,
+                payload JSON,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                is_deleted BOOLEAN DEFAULT FALSE,
+                deleted_at TIMESTAMP NULL,
+                INDEX idx_ip_address (ip_address),
+                INDEX idx_created_at (created_at),
+                INDEX idx_endpoint (endpoint)
+            )
+        `);
+
         console.log('Database and tables initialized successfully');
         await connection.end();
         
