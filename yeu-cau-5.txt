@@ -1,0 +1,39 @@
+Requirement: Lưu IP Address và User-Agent của Người Dùng
+1. Functional Requirements
+Lưu thông tin IP Address và User-Agent
+Mỗi request từ extension:
+Khi extension gửi request đến server, hệ thống sẽ tự động lấy:
+IP address của người dùng (client IP).
+User-Agent của trình duyệt hoặc thiết bị gửi request.
+Các thông tin này sẽ được lưu vào cơ sở dữ liệu cùng với các thông tin liên quan đến request (nếu có), bao gồm:
+Thời gian gửi request (created_at).
+Endpoint được gọi (endpoint).
+Dữ liệu payload (nếu cần thiết).
+Soft-delete:
+Cơ sở dữ liệu sẽ hỗ trợ soft-delete để cho phép xóa dữ liệu một cách an toàn mà không thực sự xóa khỏi cơ sở dữ liệu.
+Thêm các cột sau vào bảng để hỗ trợ soft-delete:
+is_deleted: Cờ boolean (true/false) để đánh dấu bản ghi đã bị xóa.
+deleted_at: Thời gian bản ghi bị xóa (nếu có).
+Giám sát và bảo mật lưu lượng truy cập
+Giám sát lưu lượng:
+Lưu trữ thông tin IP và User-Agent để phân tích hành vi người dùng, phát hiện các hành vi bất thường như:
+Gửi quá nhiều request trong thời gian ngắn.
+Sử dụng các User-Agent đáng ngờ (ví dụ: bot hoặc script tự động).
+Hỗ trợ truy vết (troubleshooting) khi xảy ra lỗi hoặc sự cố bảo mật.
+Bảo mật lưu lượng:
+Sử dụng thông tin IP và User-Agent để:
+Phát hiện và chặn các IP có hành vi spam hoặc DDoS.
+Phát hiện các User-Agent không hợp lệ hoặc đáng ngờ.
+Kết hợp với các cơ chế bảo mật khác như rate limiting và IP banning.
+2. Non-Functional Requirements
+Bảo mật
+Ẩn thông tin nhạy cảm:
+Đảm bảo rằng thông tin IP và User-Agent được lưu trữ an toàn và không bị lộ ra ngoài.
+Chỉ Admin hoặc các hệ thống được ủy quyền mới có quyền truy cập vào dữ liệu này.
+Mã hóa dữ liệu nhạy cảm:
+Nếu cần thiết, mã hóa thông tin IP trước khi lưu vào cơ sở dữ liệu.
+Hiệu suất
+Tối ưu hóa lưu trữ:
+Sử dụng cơ chế phân trang (pagination) khi truy vấn dữ liệu để tránh tải quá nhiều bản ghi cùng lúc.
+Tối ưu hóa truy vấn:
+Đảm bảo các cột như ip_address, user_agent, và created_at được lập chỉ mục (index) để tăng tốc độ truy vấn.

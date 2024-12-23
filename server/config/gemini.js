@@ -97,11 +97,11 @@ function createPrompt(content, level = 'medium', customPrompt = '', title = 'Tó
         basePrompt += `\n\nContent to summarize:\n${content}`;
 
         // Log the prompt (without actual content for clarity)
-        const logPrompt = basePrompt;
-        console.log('\nPrompt being sent to Gemini API:');
-        console.log('----------------------------------------');
-        console.log(logPrompt);
-        console.log('----------------------------------------\n');
+        // const logPrompt = basePrompt;
+        // console.log('\nPrompt being sent to Gemini API:');
+        // console.log('----------------------------------------');
+        // console.log(logPrompt);
+        // console.log('----------------------------------------\n');
 
         return basePrompt;
 

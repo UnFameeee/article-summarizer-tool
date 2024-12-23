@@ -1,0 +1,78 @@
+<div class="container py-4">
+    <h2 class="mb-4">Request Logs</h2>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>IP Address</th>
+                    <th>User Agent</th>
+                    <th>Endpoint</th>
+                    <th>Payload</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% logs.forEach(log => { %>
+                    <tr>
+                        <td><%= new Date(log.created_at).toLocaleString() %></td>
+                        <td><%= log.ip_address %></td>
+                        <td><%= log.user_agent %></td>
+                        <td><%= log.endpoint %></td>
+                        <td>
+                            <% if (log.payload) { %>
+                                <pre class="mb-0"><%= JSON.stringify(log.payload, null, 2) %></pre>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <% if (totalPages > 1) { %>
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <% if (hasPreviousPage) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= previousPage %>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            <% } %>
+
+            <% 
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            %>
+
+            <% for (let i = startPage; i <= endPage; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+
+            <% if (hasNextPage) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= nextPage %>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= lastPage %>" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+    <% } %>
+</div> 
