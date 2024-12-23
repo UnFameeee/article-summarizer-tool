@@ -2,19 +2,19 @@
 chrome.runtime.onInstalled.addListener(() => {
     console.log('Chunk Sum extension installed');
     
-    // Create context menu
-    chrome.contextMenus.create({
-        id: 'summarizeSelection',
-        title: 'Summarize Selection',
-        contexts: ['selection']
-    });
+    // // Create context menu
+    // chrome.contextMenus.create({
+    //     id: 'summarizeSelection',
+    //     title: 'Summarize Selection',
+    //     contexts: ['selection']
+    // });
 
-    // Create context menu for page
-    chrome.contextMenus.create({
-        id: 'summarizePage',
-        title: 'Summarize Entire Page',
-        contexts: ['page']
-    });
+    // // Create context menu for page
+    // chrome.contextMenus.create({
+    //     id: 'summarizePage',
+    //     title: 'Summarize Entire Page',
+    //     contexts: ['page']
+    // });
 });
 
 // Handle context menu clicks
