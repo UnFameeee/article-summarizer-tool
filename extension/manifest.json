@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Chunk Sum",
   "version": "1.0",
-  "description": "Quickly generate summaries for webpages or text using AI, delivering concise summaries tailored to your custom prompts in one click.",
+  "description": "Summarize web content concisely with custom prompts, delivering tailored, clear, and essential information efficiently.",
   "permissions": [
     "activeTab",
     "storage",
