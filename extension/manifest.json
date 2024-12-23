@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Chunk Sum",
   "version": "1.0",
-  "description": "Summarize web content using Google Gemini API",
+  "description": "Quickly generate summaries for webpages or text using AI, delivering concise summaries tailored to your custom prompts in one click.",
   "permissions": [
     "activeTab",
     "storage",
@@ -10,7 +10,8 @@
     "contextMenus"
   ],
   "host_permissions": [
-    "http://localhost:3000/*"
+    "http://localhost:3000/*",
+    "<all_urls>"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -27,5 +28,8 @@
     "16": "images/icon16.png",
     "48": "images/icon48.png",
     "128": "images/icon128.png"
+  },
+  "config": {
+    "apiEndpoint": "http://localhost:3000"
   }
 } 

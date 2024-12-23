@@ -1,0 +1,16 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background loop/infinity shape -->
+  <path d="M45 64 C45 52, 55 45, 64 45 C73 45, 83 52, 83 64 C83 76, 73 83, 64 83 C55 83, 45 76, 45 64 Z" 
+        fill="#40D6B4"
+        transform="rotate(-10, 64, 64)"/>
+  
+  <!-- Text elements -->
+  <text x="64" y="70" 
+        font-family="Arial, sans-serif" 
+        font-size="24" 
+        font-weight="bold" 
+        text-anchor="middle" 
+        fill="#064E40">
+    Chunk Sum
+  </text>
+</svg>
