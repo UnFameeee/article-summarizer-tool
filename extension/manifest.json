@@ -6,10 +6,12 @@
   "permissions": [
     "activeTab",
     "storage",
-    "scripting"
+    "scripting",
+    "contextMenus"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "http://localhost:3000/*",
+    "https://chunksum.com/*"
   ],
   "action": {
     "default_popup": "popup.html",

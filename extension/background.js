@@ -1,41 +1,71 @@
+const API_ENDPOINT = 'http://localhost:3000';
+
 // Listen for installation
 chrome.runtime.onInstalled.addListener(() => {
     console.log('Chunk Sum extension installed');
     
-    // // Create context menu
-    // chrome.contextMenus.create({
-    //     id: 'summarizeSelection',
-    //     title: 'Summarize Selection',
-    //     contexts: ['selection']
-    // });
-
-    // // Create context menu for page
-    // chrome.contextMenus.create({
-    //     id: 'summarizePage',
-    //     title: 'Summarize Entire Page',
-    //     contexts: ['page']
-    // });
+    // Create context menu
+    chrome.contextMenus.create({
+        id: 'summarizeSelection',
+        title: 'Summarize With ChunkSum',
+        contexts: ['selection']
+    });
 });
 
 // Handle context menu clicks
-// chrome.contextMenus.onClicked.addListener((info, tab) => {
-//     if (info.menuItemId === 'summarizeSelection') {
-//         // Store selected text and open popup
-//         chrome.storage.local.set({ 
-//             selectedText: info.selectionText,
-//             summarizeType: 'selection'
-//         }, () => {
-//             chrome.action.openPopup();
-//         });
-//     } else if (info.menuItemId === 'summarizePage') {
-//         // Open popup for entire page
-//         chrome.storage.local.set({ 
-//             summarizeType: 'page'
-//         }, () => {
-//             chrome.action.openPopup();
-//         });
-//     }
-// });
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === 'summarizeSelection') {
+        // Get current settings
+        chrome.storage.local.get(['customPrompt', 'summaryLevel'], async (result) => {
+            const customPrompt = result.customPrompt || '';
+            const summaryLevel = result.summaryLevel || 'medium';
+
+            try {
+                // Send request to API
+                const response = await fetch(`${API_ENDPOINT}/api/summarize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: info.selectionText,
+                        customPrompt: customPrompt || '',
+                        level: summaryLevel || 'medium'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get summary');
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to get summary');
+                }
+
+                // Store summary in local storage
+                chrome.storage.local.set({
+                    latestSummary: data.data.summary,
+                    summaryId: data.data.id,
+                    error: null
+                }, () => {
+                    // Open popup after storing data
+                    chrome.action.openPopup();
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                // Store error in local storage
+                chrome.storage.local.set({
+                    error: error.message || 'Failed to generate summary'
+                }, () => {
+                    chrome.action.openPopup();
+                });
+            }
+        });
+    }
+});
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
