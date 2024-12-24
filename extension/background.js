@@ -18,24 +18,24 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // Handle context menu clicks
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === 'summarizeSelection') {
-        // Store selected text and open popup
-        chrome.storage.local.set({ 
-            selectedText: info.selectionText,
-            summarizeType: 'selection'
-        }, () => {
-            chrome.action.openPopup();
-        });
-    } else if (info.menuItemId === 'summarizePage') {
-        // Open popup for entire page
-        chrome.storage.local.set({ 
-            summarizeType: 'page'
-        }, () => {
-            chrome.action.openPopup();
-        });
-    }
-});
+// chrome.contextMenus.onClicked.addListener((info, tab) => {
+//     if (info.menuItemId === 'summarizeSelection') {
+//         // Store selected text and open popup
+//         chrome.storage.local.set({ 
+//             selectedText: info.selectionText,
+//             summarizeType: 'selection'
+//         }, () => {
+//             chrome.action.openPopup();
+//         });
+//     } else if (info.menuItemId === 'summarizePage') {
+//         // Open popup for entire page
+//         chrome.storage.local.set({ 
+//             summarizeType: 'page'
+//         }, () => {
+//             chrome.action.openPopup();
+//         });
+//     }
+// });
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
