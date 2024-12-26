@@ -135,6 +135,8 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingDiv.style.display = 'block';
             errorDiv.style.display = 'none';
             summaryContainer.style.display = 'none';
+            summarizeBtn.disabled = true;
+            summarizeBtn.classList.add('disabled');
 
             // Get current tab URL and user ID
             const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
@@ -158,10 +160,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             });
 
+            // Check if response is JSON
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Server error. Please try again later.");
+            }
+
             const data = await response.json();
 
             if (!data.success) {
-                throw new Error(data.error);
+                throw new Error(data.error || 'Unable to generate summary. Please try again.');
             }
 
             // Display summary
@@ -180,10 +188,113 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('Error:', error);
-            errorDiv.textContent = error.message || 'Error: Could not generate summary. Please try again.';
+            // Show user-friendly error message
+            let userMessage = 'Sorry, we encountered an error. Please try again.';
+            
+            if (!navigator.onLine) {
+                userMessage = 'Please check your internet connection and try again.';
+            } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                userMessage = 'Unable to connect to server. Please try again later.';
+            } else if (error.message.includes('timeout')) {
+                userMessage = 'Request timed out. Please try again.';
+            }
+            
+            errorDiv.textContent = userMessage;
             errorDiv.style.display = 'block';
         } finally {
             loadingDiv.style.display = 'none';
+            summarizeBtn.disabled = false;
+            summarizeBtn.classList.remove('disabled');
         }
+    });
+
+    // Listen for messages from parent window
+    window.addEventListener('message', async function(event) {
+        if (event.data.type === 'SELECTED_TEXT') {
+            const { selectedText, url } = event.data.data;
+            
+            // Show loading
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            summaryContainer.style.display = 'none';
+            summarizeBtn.disabled = true;
+            summarizeBtn.classList.add('disabled');
+
+            try {
+                // Get current settings
+                const customPrompt = document.getElementById('customPrompt').value;
+                const summaryLevel = document.querySelector('input[name="summaryLevel"]:checked').value;
+
+                // Send request to API
+                const response = await fetch(`${API_ENDPOINT}/api/summarize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: url,
+                        content: selectedText,
+                        prompt: customPrompt,
+                        summaryLevel: summaryLevel
+                    })
+                });
+
+                // Check if response is JSON
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("Server error. Please try again later.");
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Unable to generate summary. Please try again.');
+                }
+
+                // Display summary
+                summaryContent.innerHTML = data.data.summary;
+                summaryContainer.style.display = 'block';
+                
+                if (data.data.slug) {
+                    viewDetailBtn.style.display = 'block';
+                    viewDetailBtn.onclick = () => {
+                        window.open(`${API_ENDPOINT}/summary/${data.data.slug}`);
+                    };
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Show user-friendly error message
+                let userMessage = 'Sorry, we encountered an error. Please try again.';
+                
+                if (!navigator.onLine) {
+                    userMessage = 'Please check your internet connection and try again.';
+                } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    userMessage = 'Unable to connect to server. Please try again later.';
+                } else if (error.message.includes('timeout')) {
+                    userMessage = 'Request timed out. Please try again.';
+                }
+                
+                errorDiv.textContent = userMessage;
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+                summarizeBtn.disabled = false;
+                summarizeBtn.classList.remove('disabled');
+            }
+        }
+    });
+
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl, {
+            html: true,
+            template: `
+                <div class="tooltip" role="tooltip">
+                    <div class="tooltip-arrow"></div>
+                    <div class="tooltip-inner text-start" style="max-width: 200px;"></div>
+                </div>
+            `
+        });
     });
 }); 

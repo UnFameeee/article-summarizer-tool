@@ -7,12 +7,21 @@
     "activeTab",
     "storage",
     "contextMenus",
-    "windows"
+    "scripting"
   ],
   "host_permissions": [
     "http://localhost:3000/*",
     "https://chunksum.com/*"
   ],
+  "web_accessible_resources": [{
+    "resources": [
+      "popup.html"
+    ],
+    "matches": [
+      "http://*/*",
+      "https://*/*"
+    ]
+  }],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

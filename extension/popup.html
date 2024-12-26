@@ -364,6 +364,14 @@
             padding-left: 1.5rem;
             margin-bottom: 1.5rem;
         }
+
+        /* Disabled button state */
+        .btn.disabled,
+        .btn:disabled {
+            opacity: 0.65;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -395,6 +403,9 @@
                 <h4>
                     <i class="fas fa-layer-group"></i>
                     Summary Level
+                    <span class="info-tooltip" data-tooltip="How much of the content should be summarized?">
+                        <i class="fas fa-info-circle"></i>
+                    </span>
                 </h4>
                 <div class="radio-group">
                     <div class="radio-option">
