@@ -153,11 +153,11 @@ router.delete('/summaries/:id', authenticateToken, async (req, res) => {
 });
 
 // View summary detail
-router.get('/summary/:id', authenticateToken, async (req, res) => {
+router.get('/summary/:slug', authenticateToken, async (req, res) => {
     try {
         const [summaries] = await db.execute(
-            'SELECT * FROM summaries WHERE id = ? AND deleted = FALSE',
-            [req.params.id]
+            'SELECT * FROM summaries WHERE slug = ? AND deleted = FALSE',
+            [req.params.slug]
         );
 
         if (summaries.length === 0) {

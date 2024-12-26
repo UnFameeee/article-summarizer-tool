@@ -11,12 +11,75 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get API endpoint from config
     const API_ENDPOINT = config.apiEndpoint;
     
+    // Check if there's a stored summary to display
+    async function checkStoredSummary() {
+        const { selectedText, selectedTabUrl, shouldAutoSummarize } = await chrome.storage.local.get([
+            'selectedText',
+            'selectedTabUrl',
+            'shouldAutoSummarize'
+        ]);
+
+        // If we have selected text and should auto summarize
+        if (selectedText && shouldAutoSummarize) {
+            // Get current settings
+            const customPrompt = document.getElementById('customPrompt').value;
+            const summaryLevel = document.querySelector('input[name="summaryLevel"]:checked').value;
+
+            // Show loading
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            summaryContainer.style.display = 'none';
+
+            try {
+                // Send request to API
+                const response = await fetch(`${API_ENDPOINT}/api/summarize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: selectedTabUrl,
+                        content: selectedText,
+                        prompt: customPrompt,
+                        summaryLevel: summaryLevel
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to get summary');
+                }
+
+                // Display summary
+                summaryContent.innerHTML = data.data.summary;
+                summaryContainer.style.display = 'block';
+                
+                if (data.data.slug) {
+                    viewDetailBtn.style.display = 'block';
+                    viewDetailBtn.onclick = () => {
+                        chrome.tabs.create({
+                            url: `${API_ENDPOINT}/summary/${data.data.slug}`
+                        });
+                    };
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorDiv.textContent = error.message || 'Error: Could not generate summary. Please try again.';
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+                // Clear stored data
+                chrome.storage.local.remove(['selectedText', 'selectedTabUrl', 'shouldAutoSummarize']);
+            }
+        }
+    }
+
     // Character count function
     function updateCharCount() {
         const count = textarea.value.length;
         currentCount.textContent = count;
         
-        // Change color when approaching limit
         if (count > 4000) {
             currentCount.style.color = '#e74c3c';
         } else {
@@ -32,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial character count
     updateCharCount();
 
-    // Load saved prompt and summary level
+    // Load saved settings
     async function loadSavedSettings() {
         try {
             // Get current tab URL
@@ -54,23 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.data.latestPrompt) {
                     document.getElementById('customPrompt').value = data.data.latestPrompt.prompt;
                     document.querySelector(`input[name="summaryLevel"][value="${data.data.latestPrompt.summary_level}"]`).checked = true;
-                    // Update character count after setting the value
                     updateCharCount();
-                }
-
-                // Display the latest summary if exists
-                if (data.data.latestSummary) {
-                    summaryContent.innerHTML = data.data.latestSummary.summary_html;
-                    summaryContainer.style.display = 'block';
-                    
-                    if (data.data.latestSummary.id) {
-                        viewDetailBtn.style.display = 'block';
-                        viewDetailBtn.onclick = () => {
-                            chrome.tabs.create({
-                                url: `${API_ENDPOINT}/summary/${data.data.latestSummary.id}`
-                            });
-                        };
-                    }
                 }
             }
         } catch (error) {
@@ -78,8 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Call this function when popup is opened
+    // Call initial functions
     loadSavedSettings();
+    checkStoredSummary();
 
     summarizeBtn.addEventListener('click', async function() {
         try {
@@ -121,11 +169,11 @@ document.addEventListener('DOMContentLoaded', function() {
             summaryContainer.style.display = 'block';
             
             // Setup view detail button
-            if (data.data.id) {
+            if (data.data.slug) {
                 viewDetailBtn.style.display = 'block';
                 viewDetailBtn.onclick = () => {
                     chrome.tabs.create({
-                        url: `${API_ENDPOINT}/summary/${data.data.id}`
+                        url: `${API_ENDPOINT}/summary/${data.data.slug}`
                     });
                 };
             }
