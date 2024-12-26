@@ -132,6 +132,25 @@ async function initializeDatabase() {
             'TEXT'
         );
 
+        // Add slug column if not exists
+        await addColumnIfNotExists(
+            connection,
+            'summaries',
+            'slug',
+            'VARCHAR(255)'
+        );
+
+        // Add index for slug
+        const [slugIndex] = await connection.query(`
+            SHOW INDEX FROM summaries WHERE Key_name = 'idx_slug'
+        `);
+
+        if (slugIndex.length === 0) {
+            await connection.query(`
+                ALTER TABLE summaries ADD INDEX idx_slug (slug)
+            `);
+        }
+
         // Add admin table
         await connection.query(`
             CREATE TABLE IF NOT EXISTS admins (

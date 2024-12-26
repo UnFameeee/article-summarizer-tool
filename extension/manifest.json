@@ -6,8 +6,8 @@
   "permissions": [
     "activeTab",
     "storage",
-    "scripting",
-    "contextMenus"
+    "contextMenus",
+    "windows"
   ],
   "host_permissions": [
     "http://localhost:3000/*",

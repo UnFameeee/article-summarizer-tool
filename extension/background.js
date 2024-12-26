@@ -15,54 +15,27 @@ chrome.runtime.onInstalled.addListener(() => {
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === 'summarizeSelection') {
-        // Get current settings
-        chrome.storage.local.get(['customPrompt', 'summaryLevel'], async (result) => {
-            const customPrompt = result.customPrompt || '';
-            const summaryLevel = result.summaryLevel || 'medium';
-
-            try {
-                // Send request to API
-                const response = await fetch(`${API_ENDPOINT}/api/summarize`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        text: info.selectionText,
-                        customPrompt: customPrompt || '',
-                        level: summaryLevel || 'medium'
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to get summary');
-                }
-
-                const data = await response.json();
-
-                if (!data.success) {
-                    throw new Error(data.error || 'Failed to get summary');
-                }
-
-                // Store summary in local storage
-                chrome.storage.local.set({
-                    latestSummary: data.data.summary,
-                    summaryId: data.data.id,
-                    error: null
-                }, () => {
-                    // Open popup after storing data
-                    chrome.action.openPopup();
-                });
-
-            } catch (error) {
-                console.error('Error:', error);
-                // Store error in local storage
-                chrome.storage.local.set({
-                    error: error.message || 'Failed to generate summary'
-                }, () => {
-                    chrome.action.openPopup();
-                });
-            }
+        // Store selected text and tab info
+        chrome.storage.local.set({
+            selectedText: info.selectionText,
+            selectedTabUrl: tab.url,
+            shouldAutoSummarize: true
+        }, async () => {
+            // Get current window to calculate position
+            const windows = await chrome.windows.getAll();
+            const currentWindow = windows[0];
+            
+            // Open popup immediately
+            chrome.windows.create({
+                url: chrome.runtime.getURL('popup.html'),
+                type: 'popup',
+                width: 500,
+                height: 600,
+                left: Math.max(currentWindow.left + currentWindow.width - 520, 0),
+                top: currentWindow.top + 20,
+                focused: true,
+                state: 'normal'
+            });
         });
     }
 });
