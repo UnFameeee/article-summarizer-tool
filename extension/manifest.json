@@ -3,6 +3,7 @@
   "name": "Chunk Sum",
   "version": "1.0",
   "description": "Summarize web content concisely with custom prompts, delivering tailored, clear, and essential information efficiently.",
+  "key": "",
   "permissions": [
     "activeTab",
     "storage",

@@ -151,6 +151,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-API-Key': 'YOUR_API_KEY',
+                    'X-Extension-ID': chrome.runtime.id
                 },
                 body: JSON.stringify({
                     url: tab.url,
@@ -229,7 +231,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await fetch(`${API_ENDPOINT}/api/summarize`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-API-Key': 'YOUR_API_KEY',
+                        'X-Extension-ID': chrome.runtime.id
                     },
                     body: JSON.stringify({
                         url: url,

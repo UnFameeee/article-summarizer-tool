@@ -5,6 +5,43 @@ const { generateSummary } = require('../config/gemini');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { v4: uuidv4 } = require('uuid');
+const rateLimit = require('express-rate-limit');
+
+const validApiKey = 'YOUR_API_KEY';
+const validExtensionIds = ['YOUR_EXTENSION_ID']; // Add your extension ID here
+
+const validateApiKey = (req, res, next) => {
+    const apiKey = req.headers['x-api-key'];
+    const extensionId = req.headers['x-extension-id'];
+
+    if (!apiKey || apiKey !== validApiKey) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized access'
+        });
+    }
+
+    if (!extensionId || !validExtensionIds.includes(extensionId)) {
+        return res.status(401).json({
+            success: false,
+            error: 'Invalid extension'
+        });
+    }
+
+    next();
+};
+
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: {
+        success: false,
+        error: 'Too many requests, please try again later.'
+    }
+});
+
+// Apply rate limiting to API routes
+router.use('/api/', apiLimiter);
 
 // Function to extract main content from webpage
 async function extractMainContent(url) {
@@ -153,7 +190,7 @@ router.get('/latest-summary', async (req, res) => {
 });
 
 // POST /api/summarize endpoint
-router.post('/summarize', async (req, res) => {
+router.post('/summarize', validateApiKey, async (req, res) => {
     try {
         const { url, prompt, summaryLevel, userId } = req.body;
         const summaryId = uuidv4();
